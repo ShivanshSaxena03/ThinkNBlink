@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Think And Blink (AI Tronics)</title>
+<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  background: radial-gradient(circle at top, #1e293b, #020617);
+  font-family:'Segoe UI',sans-serif;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  color:white;
+}
+
+.game{
+  width:520px;
+  padding:25px;
+  border-radius:20px;
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(15px);
+  box-shadow:0 0 40px rgba(0,0,0,0.6);
+}
+
+h2{
+  text-align:center;
+  margin-bottom:15px;
+  background:linear-gradient(90deg,#38bdf8,#a78bfa);
+  -webkit-background-clip:text;
+  color:transparent;
+}
+
+input{
+  width:100%;
+  padding:12px;
+  border-radius:25px;
+  border:none;
+  outline:none;
+  margin-top:10px;
+}
+
+button{
+  margin-top:12px;
+  padding:10px 20px;
+  border-radius:25px;
+  border:none;
+  background:linear-gradient(90deg,#38bdf8,#6366f1);
+  color:white;
+  cursor:pointer;
+  transition:0.2s;
+}
+button:hover{transform:scale(1.05);}
+
+.top-bar{
+  display:flex;
+  justify-content:space-between;
+  margin-top:10px;
+}
+
+.timer{
+  font-family:monospace;
+  color:#22c55e;
+}
+
+.grid{
+  display:grid;
+  gap:12px;
+  margin-top:20px;
+}
+
+.cell{
+  height:65px;
+  border-radius:12px;
+  background:rgba(255,255,255,0.1);
+  cursor:pointer;
+  transition:all 0.15s ease;
+}
+.cell:hover{transform:scale(1.08);}
+
+.active{
+  background:#38bdf8;
+  box-shadow:0 0 20px #38bdf8,0 0 40px #38bdf8;
+}
+
+.correct{
+  background:#22c55e !important;
+  box-shadow:0 0 20px #22c55e,0 0 40px #22c55e;
+}
+
+.wrong{
+  background:#ef4444 !important;
+  box-shadow:0 0 20px #ef4444,0 0 40px #ef4444;
+}
+
+.leaderboard{
+  margin-top:20px;
+  max-height:180px;
+  overflow-y:auto;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+th,td{
+  padding:6px;
+  font-size:13px;
+  border-bottom:1px solid rgba(255,255,255,0.1);
+}
+
+.admin-btn{
+  position:fixed;
+  bottom:5px;
+  left:5px;
+  width:30px;
+  height:30px;
+  opacity:0;
+}
+</style>
+</head>
+
+<body>
+
+<div id="app" class="game">
+
+<h2>⚡ Think And Blink (AI Tronics)</h2>
+
+<div v-if="!gameStarted && !gameOver">
+  <input v-model="name" placeholder="Enter Name">
+  <button @click="startGame">Start Game</button>
+
+  <div class="leaderboard">
+    <h3>🏆 Leaderboard</h3>
+    <table id="leaderboardTable"></table>
+  </div>
+</div>
+
+<div v-if="gameStarted">
+  <div class="top-bar">
+    <span>Level: {{ level }}</span>
+    <span>Score: {{ score }}</span>
+    <span class="timer">⏱ {{ timer }}</span>
+  </div>
+
+  <div class="grid" :style="gridStyle">
+    <div v-for="(c,i) in grid"
+         :key="i"
+         class="cell"
+         :class="[
+           activeIndex === i ? 'active' : '',
+           clickedIndex === i ? clickState : ''
+         ]"
+         @click="clickCell(i)">
+    </div>
+  </div>
+</div>
+
+<div v-if="gameOver">
+  <h3>Game Over</h3>
+  <p>Score: {{ score }}</p>
+  <button @click="reset">Play Again</button>
+</div>
+
+<div class="admin-btn" @click="toggleAdmin"></div>
+
+</div>
+
+<script>
+new Vue({
+  el:"#app",
+  data:{
+    name:"",
+    level:1,
+    score:0,
+    timer:0,
+    timerInt:null,
+
+    grid:[],
+    pattern:[],
+    user:[],
+
+    activeIndex:-1,
+    clickedIndex:-1,
+    clickState:"",
+
+    gameStarted:false,
+    gameOver:false,
+    waitingInput:false,
+
+    lastCompletedLevel:0
+  },
+
+  computed:{
+    gridStyle(){
+      let size=this.level+2;
+      return {gridTemplateColumns:`repeat(${size},1fr)`};
+    }
+  },
+
+  mounted(){
+    this.renderLeaderboard();
+  },
+
+  methods:{
+
+    generateGrid(){
+      let size=this.level+2;
+      this.grid=Array(size*size).fill(0);
+    },
+
+    generatePattern(){
+      let len=this.level*3+2;
+      this.pattern=[];
+      for(let i=0;i<len;i++){
+        this.pattern.push(Math.floor(Math.random()*this.grid.length));
+      }
+    },
+
+    startGame(){
+      this.level=1;
+      this.score=0;
+      this.lastCompletedLevel=0;
+      this.gameStarted=true;
+      this.gameOver=false;
+      this.startLevel();
+    },
+
+    startLevel(){
+      this.generateGrid();
+      this.generatePattern();
+      this.user=[];
+      this.timer=12+this.level*4;
+      this.waitingInput=false;
+      this.showPattern();
+    },
+
+    showPattern(){
+      let i=0;
+
+      let interval=setInterval(()=>{
+        this.activeIndex=this.pattern[i];
+        setTimeout(()=>this.activeIndex=-1,250);
+        i++;
+
+        if(i>=this.pattern.length){
+          clearInterval(interval);
+
+          setTimeout(()=>{
+            this.waitingInput=true;
+            this.startTimer();
+          },500);
+        }
+
+      },420);
+    },
+
+    startTimer(){
+      clearInterval(this.timerInt);
+
+      this.timerInt=setInterval(()=>{
+        if(!this.waitingInput) return;
+
+        this.timer--;
+
+        if(this.timer<=0){
+          this.endGame();
+        }
+      },1000);
+    },
+
+    clickCell(i){
+      if(!this.waitingInput) return;
+
+      this.clickedIndex=i;
+
+      // WRONG
+      if(i!==this.pattern[this.user.length]){
+        this.clickState="wrong";
+
+        setTimeout(()=>{
+          this.clickedIndex=-1;
+          this.clickState="";
+          this.endGame();
+        },350);
+        return;
+      }
+
+      // CORRECT
+      this.clickState="correct";
+      this.user.push(i);
+
+      setTimeout(()=>{
+        this.clickedIndex=-1;
+        this.clickState="";
+      },200);
+
+      // LEVEL COMPLETE
+      if(this.user.length===this.pattern.length){
+
+        this.lastCompletedLevel=this.level;
+
+        let bonus=this.timer*5;
+        this.score+=100+bonus;
+
+        if(this.level===4){
+          this.endGame();
+          return;
+        }
+
+        this.level++;
+        this.waitingInput=false;
+
+        setTimeout(()=>this.startLevel(),800);
+      }
+    },
+
+    endGame(){
+        this.gameOver = true;
+        this.gameStarted = false;
+        clearInterval(this.timerInt);
+
+        this.saveScore(this.lastCompletedLevel);
+
+        // ✅ wait for DOM to re-render
+        this.$nextTick(() => {
+            this.renderLeaderboard();
+        });
+    },
+
+    saveScore(finalLevel){
+      let data=JSON.parse(localStorage.getItem("tb"))||[];
+
+      data.push({
+        name:this.name,
+        score:this.score,
+        level:finalLevel,
+        time:this.timer
+      });
+
+      data.sort((a,b)=>{
+        if(a.level!==b.level) return b.level-a.level;
+        if(a.score!==b.score) return b.score-a.score;
+        return b.time-a.time;
+      });
+
+      localStorage.setItem("tb",JSON.stringify(data));
+    },
+
+   renderLeaderboard(){
+  let table = document.getElementById("leaderboardTable");
+
+  // ✅ prevent crash
+  if(!table) return;
+
+  let data = JSON.parse(localStorage.getItem("tb")) || [];
+
+  if(data.length === 0){
+    table.innerHTML = `
+      <tr>
+        <td colspan="5" style="text-align:center;padding:15px;opacity:0.7;">
+          ✨ No records yet — be the first!
+        </td>
+      </tr>`;
+    return;
+  }
+
+  let html = `<tr>
+    <th>#</th><th>Name</th><th>Score</th><th>Level</th><th>Time</th>
+  </tr>`;
+
+  data.slice(0,10).forEach((d,i)=>{
+    html += `<tr>
+      <td>${i+1}</td>
+      <td>${d.name}</td>
+      <td>${d.score}</td>
+      <td>${d.level}</td>
+      <td>${d.time}</td>
+    </tr>`;
+  });
+
+  table.innerHTML = html;
+},
+
+    reset(){
+        this.gameOver = false;
+
+        this.$nextTick(() => {
+            this.renderLeaderboard();
+        });
+    },
+
+    toggleAdmin(){
+      localStorage.clear();
+      alert("Leaderboard Reset");
+      this.renderLeaderboard();
+    }
+  }
+});
+</script>
+
+</body>
+</html>
