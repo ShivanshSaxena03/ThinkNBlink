@@ -9,52 +9,64 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 
 body{
-  background: radial-gradient(circle at top, #1e293b, #020617);
   font-family:'Segoe UI',sans-serif;
   display:flex;
   justify-content:center;
-  align-items:center;
-  height:100vh;
-  color:white;
+  align-items:flex-start;
+  min-height:100vh;
+  padding:30px;
+  color:#e2e8f0;
+  overflow:auto;
+
+  background: radial-gradient(circle at 20% 30%, #38bdf8, transparent 40%),
+              radial-gradient(circle at 80% 70%, #6366f1, transparent 40%),
+              #020617;
 }
 
 .game{
   width:520px;
-  padding:25px;
-  border-radius:20px;
-  background:rgba(255,255,255,0.05);
-  backdrop-filter:blur(15px);
-  box-shadow:0 0 40px rgba(0,0,0,0.6);
+  padding:30px;
+  border-radius:25px;
+  background:rgba(15,23,42,0.9);
+  backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,0.1);
+  box-shadow:0 0 40px rgba(56,189,248,0.2),
+             0 0 80px rgba(99,102,241,0.15);
 }
 
 h2{
   text-align:center;
-  margin-bottom:15px;
-  background:linear-gradient(90deg,#38bdf8,#a78bfa);
+  margin-bottom:20px;
+  font-size:26px;
+  background:linear-gradient(90deg,#22d3ee,#a78bfa,#f472b6);
   -webkit-background-clip:text;
-  color:transparent;
+  -webkit-text-fill-color:transparent;
 }
 
 input{
   width:100%;
   padding:12px;
   border-radius:25px;
-  border:none;
-  outline:none;
+  border:1px solid rgba(255,255,255,0.2);
   margin-top:10px;
+  background:rgba(255,255,255,0.08);
+  color:white;
 }
 
 button{
-  margin-top:12px;
-  padding:10px 20px;
-  border-radius:25px;
+  margin-top:14px;
+  padding:12px 22px;
+  border-radius:30px;
   border:none;
-  background:linear-gradient(90deg,#38bdf8,#6366f1);
+  background:linear-gradient(90deg,#22d3ee,#6366f1,#a78bfa);
   color:white;
   cursor:pointer;
-  transition:0.2s;
+  transition:0.25s;
 }
-button:hover{transform:scale(1.05);}
+
+button:hover{
+  transform:scale(1.05);
+}
 
 .top-bar{
   display:flex;
@@ -70,48 +82,65 @@ button:hover{transform:scale(1.05);}
 .grid{
   display:grid;
   gap:12px;
-  margin-top:20px;
+  margin-top:30px;
 }
 
 .cell{
   height:65px;
-  border-radius:12px;
-  background:rgba(255,255,255,0.1);
+  border-radius:14px;
+  background:rgba(255,255,255,0.08);
   cursor:pointer;
-  transition:all 0.15s ease;
-}
-.cell:hover{transform:scale(1.08);}
-
-.active{
-  background:#38bdf8;
-  box-shadow:0 0 20px #38bdf8,0 0 40px #38bdf8;
+  transition:0.2s;
 }
 
-.correct{
-  background:#22c55e !important;
-  box-shadow:0 0 20px #22c55e,0 0 40px #22c55e;
+.cell:hover{
+  transform:scale(1.1);
 }
 
-.wrong{
-  background:#ef4444 !important;
-  box-shadow:0 0 20px #ef4444,0 0 40px #ef4444;
-}
+.active{ background:#38bdf8; }
+.correct{ background:#22c55e !important; }
+.wrong{ background:#ef4444 !important; }
 
 .leaderboard{
   margin-top:20px;
-  max-height:180px;
+  padding:15px;
+  border-radius:12px;
+  background:rgba(0,0,0,0.3);
+
+  max-height:200px;
   overflow-y:auto;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+.leaderboard::-webkit-scrollbar{
+  width:6px;
+}
+.leaderboard::-webkit-scrollbar-thumb{
+  background:#38bdf8;
+  border-radius:10px;
 }
 
 table{
   width:100%;
   border-collapse:collapse;
+  text-align:center;
+}
+
+th{
+  color:#38bdf8;
+}
+
+td{
+  color:#e2e8f0;
 }
 
 th,td{
-  padding:6px;
+  padding:8px;
   font-size:13px;
-  border-bottom:1px solid rgba(255,255,255,0.1);
+  border-bottom:1px solid rgba(255,255,255,0.2);
 }
 
 .admin-btn{
@@ -180,20 +209,15 @@ new Vue({
     score:0,
     timer:0,
     timerInt:null,
-
     grid:[],
     pattern:[],
     user:[],
-
     activeIndex:-1,
     clickedIndex:-1,
     clickState:"",
-
     gameStarted:false,
     gameOver:false,
-    waitingInput:false,
-
-    lastCompletedLevel:0
+    waitingInput:false
   },
 
   computed:{
@@ -204,11 +228,12 @@ new Vue({
   },
 
   mounted(){
-    this.renderLeaderboard();
+    this.$nextTick(() => {
+      this.renderLeaderboard();
+    });
   },
 
   methods:{
-
     generateGrid(){
       let size=this.level+2;
       this.grid=Array(size*size).fill(0);
@@ -225,7 +250,6 @@ new Vue({
     startGame(){
       this.level=1;
       this.score=0;
-      this.lastCompletedLevel=0;
       this.gameStarted=true;
       this.gameOver=false;
       this.startLevel();
@@ -242,7 +266,6 @@ new Vue({
 
     showPattern(){
       let i=0;
-
       let interval=setInterval(()=>{
         this.activeIndex=this.pattern[i];
         setTimeout(()=>this.activeIndex=-1,250);
@@ -250,27 +273,20 @@ new Vue({
 
         if(i>=this.pattern.length){
           clearInterval(interval);
-
           setTimeout(()=>{
             this.waitingInput=true;
             this.startTimer();
           },500);
         }
-
       },420);
     },
 
     startTimer(){
       clearInterval(this.timerInt);
-
       this.timerInt=setInterval(()=>{
         if(!this.waitingInput) return;
-
         this.timer--;
-
-        if(this.timer<=0){
-          this.endGame();
-        }
+        if(this.timer<=0) this.endGame();
       },1000);
     },
 
@@ -279,10 +295,8 @@ new Vue({
 
       this.clickedIndex=i;
 
-      // WRONG
       if(i!==this.pattern[this.user.length]){
         this.clickState="wrong";
-
         setTimeout(()=>{
           this.clickedIndex=-1;
           this.clickState="";
@@ -291,7 +305,6 @@ new Vue({
         return;
       }
 
-      // CORRECT
       this.clickState="correct";
       this.user.push(i);
 
@@ -300,13 +313,8 @@ new Vue({
         this.clickState="";
       },200);
 
-      // LEVEL COMPLETE
       if(this.user.length===this.pattern.length){
-
-        this.lastCompletedLevel=this.level;
-
-        let bonus=this.timer*5;
-        this.score+=100+bonus;
+        this.score+=100+this.timer*5;
 
         if(this.level===4){
           this.endGame();
@@ -315,84 +323,70 @@ new Vue({
 
         this.level++;
         this.waitingInput=false;
-
         setTimeout(()=>this.startLevel(),800);
       }
     },
 
     endGame(){
-        this.gameOver = true;
-        this.gameStarted = false;
-        clearInterval(this.timerInt);
-
-        this.saveScore(this.lastCompletedLevel);
-
-        // ✅ wait for DOM to re-render
-        this.$nextTick(() => {
-            this.renderLeaderboard();
-        });
+      this.gameOver=true;
+      this.gameStarted=false;
+      clearInterval(this.timerInt);
+      this.saveScore();
+      this.$nextTick(()=>this.renderLeaderboard());
     },
 
-    saveScore(finalLevel){
+    saveScore(){
       let data=JSON.parse(localStorage.getItem("tb"))||[];
 
       data.push({
         name:this.name,
         score:this.score,
-        level:finalLevel,
+        level:this.level,
         time:this.timer
       });
 
-      data.sort((a,b)=>{
-        if(a.level!==b.level) return b.level-a.level;
-        if(a.score!==b.score) return b.score-a.score;
-        return b.time-a.time;
-      });
-
+      data.sort((a,b)=>b.score-a.score);
       localStorage.setItem("tb",JSON.stringify(data));
     },
 
-   renderLeaderboard(){
-  let table = document.getElementById("leaderboardTable");
+    renderLeaderboard(){
+      let table=document.getElementById("leaderboardTable");
+      if(!table) return;
 
-  // ✅ prevent crash
-  if(!table) return;
+      let data=JSON.parse(localStorage.getItem("tb"))||[];
 
-  let data = JSON.parse(localStorage.getItem("tb")) || [];
+      if(data.length===0){
+        table.innerHTML=`<tr>
+          <td colspan="5" style="padding:15px;">✨ No records yet — be the first!</td>
+        </tr>`;
+        return;
+      }
 
-  if(data.length === 0){
-    table.innerHTML = `
-      <tr>
-        <td colspan="5" style="text-align:center;padding:15px;opacity:0.7;">
-          ✨ No records yet — be the first!
-        </td>
+      let html=`<tr>
+        <th>#</th><th>Name</th><th>Score</th><th>Level</th><th>Time</th>
       </tr>`;
-    return;
-  }
 
-  let html = `<tr>
-    <th>#</th><th>Name</th><th>Score</th><th>Level</th><th>Time</th>
-  </tr>`;
+      data.slice(0,10).forEach((d,i)=>{
+        let medal="";
+        if(i===0) medal="🥇";
+        else if(i===1) medal="🥈";
+        else if(i===2) medal="🥉";
 
-  data.slice(0,10).forEach((d,i)=>{
-    html += `<tr>
-      <td>${i+1}</td>
-      <td>${d.name}</td>
-      <td>${d.score}</td>
-      <td>${d.level}</td>
-      <td>${d.time}</td>
-    </tr>`;
-  });
+        html+=`<tr>
+          <td>${medal ? medal : i+1}</td>
+          <td>${d.name}</td>
+          <td>${d.score}</td>
+          <td>${d.level}</td>
+          <td>${d.time}</td>
+        </tr>`;
+      });
 
-  table.innerHTML = html;
-},
+      table.innerHTML=html;
+    },
 
     reset(){
-        this.gameOver = false;
-
-        this.$nextTick(() => {
-            this.renderLeaderboard();
-        });
+      this.gameOver=false;
+      this.$nextTick(()=>this.renderLeaderboard());
     },
 
     toggleAdmin(){
