@@ -143,60 +143,91 @@ th,td{
   border-bottom:1px solid rgba(255,255,255,0.2);
 }
 
-.admin-btn{
-  position:fixed;
-  bottom:5px;
-  left:5px;
-  width:30px;
-  height:30px;
-  opacity:0;
-}
-</style>
+  /* ── GAME OVER ── */
+  .over-screen{text-align:center;padding:6px 0}
+  .over-icon{display:block;margin:0 auto 18px}
+  .over-title{
+    font-family:var(--title);font-size:48px;
+    letter-spacing:3px;line-height:1.1;margin-bottom:8px;
+  }
+  .over-title.win{color:var(--vc-cyan2);text-shadow:0 0 30px rgba(0,229,255,0.4)}
+  .over-title.lose{color:var(--vc-hot2);text-shadow:0 0 30px rgba(255,45,120,0.5)}
+  .over-msg{
+    font-family:var(--mono);font-size:14px;
+    letter-spacing:1px;color:var(--text2);margin-bottom:26px;
+  }
+  .score-big{
+    font-family:var(--title);font-size:76px;font-weight:400;
+    color:var(--vc-yellow);letter-spacing:2px;line-height:1;margin-bottom:4px;
+    text-shadow:0 0 24px rgba(255,224,51,0.35);
+  }
+  .score-lbl{
+    font-family:var(--mono);font-size:11px;
+    letter-spacing:2.5px;text-transform:uppercase;
+    color:var(--text3);margin-bottom:26px;
+  }
+  .btn-row{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+
+  /* ── LEADERBOARD ── */
+  .lb-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .lb-title{font-family:var(--title);font-size:18px;letter-spacing:2px;color:var(--vc-hot2)}
+  .lb-empty{
+    text-align:center;font-family:var(--mono);font-size:13px;
+    color:var(--text3);padding:20px;
+    border:1px dashed rgba(255,45,120,0.18);letter-spacing:1px;
+  }
+  .lb-table{width:100%;border-collapse:collapse}
+  .lb-table th{
+    font-family:var(--mono);font-size:10px;font-weight:400;
+    letter-spacing:2px;text-transform:uppercase;color:var(--text3);
+    padding:7px 10px;text-align:left;
+    border-bottom:1px solid rgba(255,45,120,0.18);
+  }
+  .lb-table td{
+    font-family:var(--mono);font-size:14px;
+    padding:10px 10px;
+    border-bottom:1px solid rgba(255,255,255,.03);
+    color:var(--text2);
+  }
+  .lb-table tr:nth-child(2) td{color:var(--vc-yellow)}
+  .lb-rank{color:var(--text3)!important}
+
+  .fade-enter-active,.fade-leave-active{transition:opacity .2s,transform .2s}
+  .fade-enter{opacity:0;transform:translateY(6px)}
+  .fade-leave-to{opacity:0;transform:translateY(-6px)}
+  .admin-btn{position:absolute;bottom:6px;left:6px;width:26px;height:26px;opacity:0;border:none;background:none;cursor:pointer}
+
+  /* small screens: keep visible without clipping */
+  @media (max-width:860px){
+    .card{width:100%;padding:28px 24px 30px}
+    .cell{height:84px}
+  }
+  @media (max-width:600px){
+    .cell{height:76px}
+    .hud-item{min-width:72px}
+  }
+  </style>
 </head>
-
 <body>
+  <div id="app" class="card">
 
-<div id="app" class="game">
-
-<h2>⚡ Think And Blink (AI Tronics)</h2>
-
-<div v-if="!gameStarted && !gameOver">
-  <input v-model="name" placeholder="Enter Name">
-  <button @click="startGame">Start Game</button>
-
-  <div class="leaderboard">
-    <h3>🏆 Leaderboard</h3>
-    <table id="leaderboardTable"></table>
-  </div>
-</div>
-
-<div v-if="gameStarted">
-  <div class="top-bar">
-    <span>Level: {{ level }}</span>
-    <span>Score: {{ score }}</span>
-    <span class="timer">⏱ {{ timer }}</span>
-  </div>
-
-  <div class="grid" :style="gridStyle">
-    <div v-for="(c,i) in grid"
-         :key="i"
-         class="cell"
-         :class="[
-           activeIndex === i ? 'active' : '',
-           clickedIndex === i ? clickState : ''
-         ]"
-         @click="clickCell(i)">
+    <div class="header">
+      <div class="logo-wrap">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+          <polygon points="20,4 24,14 35,14 27,21 30,32 20,25 10,32 13,21 5,14 16,14" fill="rgba(255,45,120,0.15)" stroke="#ff2d78" stroke-width="1.2"/>
+          <circle cx="20" cy="20" r="4.5" fill="#ff2d78" opacity=".85"/>
+          <circle cx="20" cy="20" r="1.8" fill="#0d0118"/>
+          <line x1="20" y1="2" x2="20" y2="7" stroke="#00e5ff" stroke-width="1.2"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-name">Think &amp; Blink</div>
+        <div class="brand-sub">Vice City · Memory Hustle</div>
+      </div>
+      <div class="header-stars">
+        <div class="star" v-for="n in 5" :class="{lit:n<=starsEarned}"></div>
+      </div>
     </div>
-  </div>
-</div>
-
-<div v-if="gameOver">
-  <h3>Game Over</h3>
-  <p>Score: {{ score }}</p>
-  <button @click="reset">Play Again</button>
-</div>
-
-<div class="admin-btn" @click="toggleAdmin"></div>
 
 </div>
 
@@ -255,148 +286,162 @@ new Vue({
       this.startLevel();
     },
 
-    startLevel(){
-      this.generateGrid();
-      this.generatePattern();
-      this.user=[];
-      this.timer=12+this.level*4;
-      this.waitingInput=false;
-      this.showPattern();
+  <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+  <script>
+  const LEVELS=[
+    {gridSize:3,patternLen:4,flashSpeed:560,baseTimer:20},
+    {gridSize:3,patternLen:5,flashSpeed:520,baseTimer:22},
+    {gridSize:3,patternLen:6,flashSpeed:490,baseTimer:22},
+    {gridSize:4,patternLen:7,flashSpeed:460,baseTimer:24},
+    {gridSize:4,patternLen:8,flashSpeed:430,baseTimer:26},
+    {gridSize:4,patternLen:9,flashSpeed:400,baseTimer:26},
+    {gridSize:5,patternLen:10,flashSpeed:370,baseTimer:28},
+    {gridSize:5,patternLen:11,flashSpeed:340,baseTimer:28},
+    {gridSize:5,patternLen:13,flashSpeed:310,baseTimer:30},
+    {gridSize:6,patternLen:14,flashSpeed:280,baseTimer:30},
+  ];
+  new Vue({
+    el:'#app',
+    data:{
+      name:'',screen:'intro',level:1,score:0,
+      timer:0,timerInt:null,grid:[],pattern:[],user:[],
+      activeIndex:-1,clickedIndex:-1,clickState:'',mistakeIndex:-1,
+      waitingInput:false,locked:false,mistakes:0,won:false,lastCompletedLevel:0,
     },
-
-    showPattern(){
-      let i=0;
-      let interval=setInterval(()=>{
-        this.activeIndex=this.pattern[i];
-        setTimeout(()=>this.activeIndex=-1,250);
-        i++;
-
-        if(i>=this.pattern.length){
-          clearInterval(interval);
-          setTimeout(()=>{
-            this.waitingInput=true;
-            this.startTimer();
-          },500);
+    computed:{
+      cfg(){return LEVELS[this.level-1]||LEVELS[LEVELS.length-1]},
+      gridSize(){return this.cfg.gridSize},
+      gridStyle(){return{gridTemplateColumns:`repeat(${this.gridSize},1fr)`}},
+      progressPct(){
+        if(!this.waitingInput||!this.pattern.length)return 0;
+        return(this.user.length/this.pattern.length)*100;
+      },
+      timerClass(){
+        if(this.timer<=5)return'hud-val danger';
+        if(this.timer<=10)return'hud-val warn';
+        return'hud-val go';
+      },
+      starsEarned(){return Math.min(5,Math.ceil((this.lastCompletedLevel||0)/2))},
+    },
+    mounted(){this.renderLB('lb-intro')},
+    methods:{
+      cellClass(i){
+        const c=[];
+        if(this.activeIndex===i)c.push('active');
+        if(this.mistakeIndex===i)c.push('mistake');
+        if(this.clickedIndex===i&&this.clickState)c.push(this.clickState);
+        return c;
+      },
+      startGame(){
+        this.level=1;this.score=0;
+        this.lastCompletedLevel=0;this.won=false;
+        this.screen='game';this.startLevel();
+      },
+      startLevel(){
+        const sz=this.cfg.gridSize,len=this.cfg.patternLen;
+        this.grid=Array(sz*sz).fill(0);
+        this.pattern=[];let prev=-1;
+        for(let i=0;i<len;i++){
+          let n;
+          do{n=Math.floor(Math.random()*this.grid.length)}while(n===prev);
+          this.pattern.push(n);prev=n;
         }
-      },420);
-    },
-
-    startTimer(){
-      clearInterval(this.timerInt);
-      this.timerInt=setInterval(()=>{
-        if(!this.waitingInput) return;
-        this.timer--;
-        if(this.timer<=0) this.endGame();
-      },1000);
-    },
-
-    clickCell(i){
-      if(!this.waitingInput) return;
-
-      this.clickedIndex=i;
-
-      if(i!==this.pattern[this.user.length]){
-        this.clickState="wrong";
-        setTimeout(()=>{
-          this.clickedIndex=-1;
-          this.clickState="";
-          this.endGame();
-        },350);
-        return;
-      }
-
-      this.clickState="correct";
-      this.user.push(i);
-
-      setTimeout(()=>{
-        this.clickedIndex=-1;
-        this.clickState="";
-      },200);
-
-      if(this.user.length===this.pattern.length){
-        this.score+=100+this.timer*5;
-
-        if(this.level===4){
-          this.endGame();
+        this.user=[];this.mistakes=0;this.locked=false;
+        this.timer=this.cfg.baseTimer;this.waitingInput=false;
+        this.activeIndex=-1;this.clickedIndex=-1;
+        this.clickState='';this.mistakeIndex=-1;
+        clearInterval(this.timerInt);
+        this.showPattern();
+      },
+      showPattern(){
+        let i=0;const spd=this.cfg.flashSpeed;
+        const onDur=Math.round(spd*.52);
+        const tick=setInterval(()=>{
+          this.activeIndex=this.pattern[i];
+          setTimeout(()=>{this.activeIndex=-1},onDur);
+          i++;
+          if(i>=this.pattern.length){
+            clearInterval(tick);
+            setTimeout(()=>{this.waitingInput=true;this.startTimer()},540);
+          }
+        },spd);
+      },
+      startTimer(){
+        clearInterval(this.timerInt);
+        this.timerInt=setInterval(()=>{
+          if(!this.waitingInput)return;
+          this.timer--;
+          if(this.timer<=0)this.endGame(false);
+        },1000);
+      },
+      clickCell(i){
+        if(!this.waitingInput||this.locked)return;
+        const expected=this.pattern[this.user.length];
+        if(i!==expected){
+          this.mistakes++;
+          this.clickedIndex=i;this.clickState='wrong';this.locked=true;
+          if(this.mistakes>=2){
+            setTimeout(()=>{this.clickedIndex=-1;this.clickState='';this.endGame(false)},420);
+          }else{
+            setTimeout(()=>{
+              this.mistakeIndex=i;
+              this.clickedIndex=-1;this.clickState='';this.locked=false;
+              setTimeout(()=>{this.mistakeIndex=-1},1200);
+            },420);
+          }
           return;
         }
-
-        this.level++;
-        this.waitingInput=false;
-        setTimeout(()=>this.startLevel(),800);
-      }
+        this.mistakeIndex=-1;
+        this.clickedIndex=i;this.clickState='correct';
+        this.user.push(i);
+        setTimeout(()=>{this.clickedIndex=-1;this.clickState=''},200);
+        if(this.user.length===this.pattern.length){
+          this.lastCompletedLevel=this.level;
+          this.score+=100+this.timer*5+this.level*20;
+          this.waitingInput=false;
+          clearInterval(this.timerInt);
+          if(this.level>=LEVELS.length){
+            setTimeout(()=>this.endGame(true),500);
+          }else{
+            this.level++;
+            setTimeout(()=>this.startLevel(),700);
+          }
+        }
+      },
+      endGame(didWin){
+        this.won=didWin;this.screen='over';
+        clearInterval(this.timerInt);
+        this.saveScore(this.lastCompletedLevel);
+        this.$nextTick(()=>this.renderLB('lb-over'));
+      },
+      goMenu(){
+        this.screen='intro';
+        this.$nextTick(()=>this.renderLB('lb-intro'));
+      },
+      saveScore(lv){
+        let d=JSON.parse(localStorage.getItem('tbl_vc'))||[];
+        d.push({name:this.name||'Tommy',score:this.score,level:lv,time:this.timer});
+        d.sort((a,b)=>b.level-a.level||b.score-a.score||b.time-a.time);
+        localStorage.setItem('tbl_vc',JSON.stringify(d));
+      },
+      renderLB(id){
+        const el=document.getElementById(id);if(!el)return;
+        const d=JSON.parse(localStorage.getItem('tbl_vc'))||[];
+        if(!d.length){
+          el.innerHTML='<div class="lb-empty">No records yet — be the first to own Vice City</div>';return;
+        }
+        let h='<table class="lb-table"><tr><th>#</th><th>Name</th><th>Cash</th><th>Mission</th><th>Time</th></tr>';
+        d.slice(0,10).forEach((r,i)=>{
+          h+=`<tr><td class="lb-rank">${i+1}</td><td>${r.name}</td><td>$${r.score}</td><td>${r.level}</td><td>${r.time}s</td></tr>`;
+        });
+        el.innerHTML=h+'</table>';
+      },
+      toggleAdmin(){
+        localStorage.removeItem('tbl_vc');
+        this.renderLB('lb-intro');this.renderLB('lb-over');
+      },
     },
-
-    endGame(){
-      this.gameOver=true;
-      this.gameStarted=false;
-      clearInterval(this.timerInt);
-      this.saveScore();
-      this.$nextTick(()=>this.renderLeaderboard());
-    },
-
-    saveScore(){
-      let data=JSON.parse(localStorage.getItem("tb"))||[];
-
-      data.push({
-        name:this.name,
-        score:this.score,
-        level:this.level,
-        time:this.timer
-      });
-
-      data.sort((a,b)=>b.score-a.score);
-      localStorage.setItem("tb",JSON.stringify(data));
-    },
-
-    renderLeaderboard(){
-      let table=document.getElementById("leaderboardTable");
-      if(!table) return;
-
-      let data=JSON.parse(localStorage.getItem("tb"))||[];
-
-      if(data.length===0){
-        table.innerHTML=`<tr>
-          <td colspan="5" style="padding:15px;">✨ No records yet — be the first!</td>
-        </tr>`;
-        return;
-      }
-
-      let html=`<tr>
-        <th>#</th><th>Name</th><th>Score</th><th>Level</th><th>Time</th>
-      </tr>`;
-
-      data.slice(0,10).forEach((d,i)=>{
-        let medal="";
-        if(i===0) medal="🥇";
-        else if(i===1) medal="🥈";
-        else if(i===2) medal="🥉";
-
-        html+=`<tr>
-          <td>${medal ? medal : i+1}</td>
-          <td>${d.name}</td>
-          <td>${d.score}</td>
-          <td>${d.level}</td>
-          <td>${d.time}</td>
-        </tr>`;
-      });
-
-      table.innerHTML=html;
-    },
-
-    reset(){
-      this.gameOver=false;
-      this.$nextTick(()=>this.renderLeaderboard());
-    },
-
-    toggleAdmin(){
-      localStorage.clear();
-      alert("Leaderboard Reset");
-      this.renderLeaderboard();
-    }
-  }
-});
-</script>
-
+  });
+  </script>
 </body>
 </html>
