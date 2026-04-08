@@ -1,605 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Think & Blink — Vice City</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pricedown+Bl&family=Oswald:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+  :root{
+    --vc-bg:#0d0118;
+    --vc-surface:rgba(14,1,28,0.98);
+    --vc-hot:#ff2d78;
+    --vc-hot2:#ff5fa0;
+    --vc-cyan:#00e5ff;
+    --vc-cyan2:#80f0ff;
+    --vc-yellow:#ffe033;
+    --vc-purple:#c026d3;
+    --vc-purple2:#e040fb;
+    --vc-green:#39ff14;
+    --vc-red:#ff1a1a;
+    --vc-amber:#ffb800;
+    --text:#ffe8f5;
+    --text2:#c080a0;
+    --text3:#704060;
+    --mono:'Share Tech Mono',monospace;
+    --sans:'Oswald',sans-serif;
+    --title:'Pricedown Bl','Impact',sans-serif;
+  }
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+  body{
+    background:var(--vc-bg);font-family:var(--sans);
+    display:flex;justify-content:center;
+    min-height:100vh;color:var(--text);
+  }
+  body::before{
+    content:'';position:fixed;inset:0;
+    background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(255,45,120,0.03) 3px,rgba(255,45,120,0.03) 6px);
+    pointer-events:none;z-index:9999;
+  }
+  .card{
+    width:820px;max-width:100%;
+    padding:36px 40px 40px;
+    background:var(--vc-surface);
+    border:1px solid rgba(255,45,120,0.25);
+    border-top:4px solid var(--vc-hot);
+    min-height:100vh;position:relative;z-index:1;
+  }
+  /* corner chrome */
+  .card::before,.card::after{
+    content:'';position:absolute;
+    width:22px;height:22px;
+    border-color:var(--vc-cyan);border-style:solid;
+  }
+  .card::before{top:8px;left:8px;border-width:2px 0 0 2px}
+  .card::after{bottom:8px;right:8px;border-width:0 2px 2px 0}
 
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Pricedown+Bl&family=Oswald:wght@400;600;700&family=Share+Tech+Mono&display=swap');
-:root{
-  --vc-bg:#0d0118;
-  --vc-surface:rgba(14,1,28,0.98);
-  --vc-hot:#ff2d78;
-  --vc-hot2:#ff5fa0;
-  --vc-cyan:#00e5ff;
-  --vc-cyan2:#80f0ff;
-  --vc-yellow:#ffe033;
-  --vc-purple:#c026d3;
-  --vc-purple2:#e040fb;
-  --vc-green:#39ff14;
-  --vc-red:#ff1a1a;
-  --vc-amber:#ffb800;
-  --text:#ffe8f5;
-  --text2:#c080a0;
-  --text3:#704060;
-  --mono:'Share Tech Mono',monospace;
-  --sans:'Oswald',sans-serif;
-  --title:'Pricedown Bl','Impact',sans-serif;
-}
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-body{
-  background:var(--vc-bg);font-family:var(--sans);
-  display:flex;justify-content:center;
-  min-height:100vh;color:var(--text);
-}
-body::before{
-  content:'';position:fixed;inset:0;
-  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(255,45,120,0.03) 3px,rgba(255,45,120,0.03) 6px);
-  pointer-events:none;z-index:9999;
-}
-.card{
-  width:700px;max-width:100%;
-  padding:32px 36px 36px;
-  background:var(--vc-surface);
-  border:1px solid rgba(255,45,120,0.25);
-  border-top:4px solid var(--vc-hot);
-  min-height:100vh;position:relative;z-index:1;
-}
-/* corner chrome */
-.card::before,.card::after{
-  content:'';position:absolute;
-  width:22px;height:22px;
-  border-color:var(--vc-cyan);border-style:solid;
-}
-.card::before{top:8px;left:8px;border-width:2px 0 0 2px}
-.card::after{bottom:8px;right:8px;border-width:0 2px 2px 0}
+  /* ── HEADER ── */
+  .header{
+    display:flex;align-items:center;gap:18px;
+    margin-bottom:26px;padding-bottom:20px;
+    border-bottom:1px solid rgba(255,45,120,0.25);
+  }
+  .logo-wrap{
+    width:58px;height:58px;
+    background:rgba(255,45,120,0.08);
+    border:1px solid rgba(255,45,120,0.35);
+    display:flex;align-items:center;justify-content:center;
+    position:relative;flex-shrink:0;
+  }
+  .brand-name{
+    font-family:var(--title);font-size:34px;
+    color:var(--vc-hot2);letter-spacing:1.5px;line-height:1;
+    text-shadow:0 0 20px rgba(255,45,120,0.5),2px 2px 0 rgba(0,0,0,0.9);
+  }
+  .brand-sub{
+    font-family:var(--mono);font-size:11px;
+    color:var(--vc-cyan);letter-spacing:3px;margin-top:5px;
+    text-transform:uppercase;
+  }
+  .header-stars{display:flex;gap:4px;margin-left:auto}
+  .star{
+    width:18px;height:18px;
+    clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
+    background:rgba(255,45,120,0.18);
+  }
+  .star.lit{background:var(--vc-hot);filter:drop-shadow(0 0 5px rgba(255,45,120,0.7))}
 
-/* ── HEADER ── */
-.header{
-  display:flex;align-items:center;gap:18px;
-  margin-bottom:26px;padding-bottom:20px;
-  border-bottom:1px solid rgba(255,45,120,0.25);
-}
-.logo-wrap{
-  width:58px;height:58px;
-  background:rgba(255,45,120,0.08);
-  border:1px solid rgba(255,45,120,0.35);
-  display:flex;align-items:center;justify-content:center;
-  position:relative;flex-shrink:0;
-}
-.brand-name{
-  font-family:var(--title);font-size:34px;
-  color:var(--vc-hot2);letter-spacing:1.5px;line-height:1;
-  text-shadow:0 0 20px rgba(255,45,120,0.5),2px 2px 0 rgba(0,0,0,0.9);
-}
-.brand-sub{
-  font-family:var(--mono);font-size:11px;
-  color:var(--vc-cyan);letter-spacing:3px;margin-top:5px;
-  text-transform:uppercase;
-}
-.header-stars{display:flex;gap:4px;margin-left:auto}
-.star{
-  width:18px;height:18px;
-  clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
-  background:rgba(255,45,120,0.18);
-}
-.star.lit{background:var(--vc-hot);filter:drop-shadow(0 0 5px rgba(255,45,120,0.7))}
+  /* ── BRIEFING ── */
+  .briefing{
+    background:rgba(255,45,120,0.06);
+    border:1px solid rgba(255,45,120,0.2);
+    border-left:4px solid var(--vc-hot);
+    padding:16px 18px;margin-bottom:18px;
+  }
+  .brief-title{
+    font-family:var(--mono);font-size:11px;letter-spacing:3px;
+    color:var(--vc-cyan);margin-bottom:10px;text-transform:uppercase;
+  }
+  .briefing p{
+    font-family:var(--mono);font-size:13px;
+    line-height:1.8;color:var(--text2);letter-spacing:.5px;
+  }
 
-/* ── BRIEFING ── */
-.briefing{
-  background:rgba(255,45,120,0.06);
-  border:1px solid rgba(255,45,120,0.2);
-  border-left:4px solid var(--vc-hot);
-  padding:16px 18px;margin-bottom:18px;
-}
-.brief-title{
-  font-family:var(--mono);font-size:11px;letter-spacing:3px;
-  color:var(--vc-cyan);margin-bottom:10px;text-transform:uppercase;
-}
-.briefing p{
-  font-family:var(--mono);font-size:13px;
-  line-height:1.8;color:var(--text2);letter-spacing:.5px;
-}
+  /* ── WANTED ── */
+  .wanted-bar{
+    display:flex;justify-content:space-between;align-items:center;
+    background:rgba(255,45,120,0.05);
+    border:1px solid rgba(255,45,120,0.18);
+    padding:10px 16px;margin-bottom:16px;
+  }
+  .wanted-lbl{font-family:var(--mono);font-size:11px;color:var(--vc-hot2);letter-spacing:2px;text-transform:uppercase}
+  .wanted-stars{display:flex;gap:5px}
+  .w-star{
+    width:22px;height:22px;
+    clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
+    background:rgba(255,45,120,0.15);
+  }
+  .w-star.lit{background:var(--vc-hot);filter:drop-shadow(0 0 5px rgba(255,45,120,0.7))}
 
-/* ── WANTED ── */
-.wanted-bar{
-  display:flex;justify-content:space-between;align-items:center;
-  background:rgba(255,45,120,0.05);
-  border:1px solid rgba(255,45,120,0.18);
-  padding:10px 16px;margin-bottom:16px;
-}
-.wanted-lbl{font-family:var(--mono);font-size:11px;color:var(--vc-hot2);letter-spacing:2px;text-transform:uppercase}
-.wanted-stars{display:flex;gap:5px}
-.w-star{
-  width:22px;height:22px;
-  clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
-  background:rgba(255,45,120,0.15);
-}
-.w-star.lit{background:var(--vc-hot);filter:drop-shadow(0 0 5px rgba(255,45,120,0.7))}
+  /* ── FIELD ── */
+  .field{position:relative;margin-bottom:16px}
+  .field-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none}
+  input{
+    width:100%;padding:14px 14px 14px 44px;
+    border:1px solid rgba(255,45,120,0.3);border-left:4px solid var(--vc-hot);
+    background:rgba(255,45,120,0.05);color:var(--text);
+    font-family:var(--sans);font-size:16px;font-weight:400;letter-spacing:1px;
+    outline:none;transition:border-color .2s;border-radius:0;
+  }
+  input:focus{border-color:rgba(255,45,120,0.7)}
+  input::placeholder{color:var(--text3)}
 
-/* ── FIELD ── */
-.field{position:relative;margin-bottom:16px}
-.field-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none}
-input{
-  width:100%;padding:14px 14px 14px 44px;
-  border:1px solid rgba(255,45,120,0.3);border-left:4px solid var(--vc-hot);
-  background:rgba(255,45,120,0.05);color:var(--text);
-  font-family:var(--sans);font-size:16px;font-weight:400;letter-spacing:1px;
-  outline:none;transition:border-color .2s;border-radius:0;
-}
-input:focus{border-color:rgba(255,45,120,0.7)}
-input::placeholder{color:var(--text3)}
+  /* ── BUTTONS ── */
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:14px 28px;
+    border:2px solid var(--vc-hot);
+    background:rgba(255,45,120,0.14);
+    color:var(--vc-hot2);
+    font-family:var(--title);font-size:18px;
+    font-weight:400;letter-spacing:2px;
+    cursor:pointer;transition:all .15s;
+    text-transform:uppercase;border-radius:0;
+  }
+  .btn:hover{background:rgba(255,45,120,0.28);transform:translateY(-1px)}
+  .btn:active{transform:translateY(0)}
+  .btn-ghost{
+    background:transparent;border:1px solid rgba(255,255,255,.15);
+    color:var(--text2);font-size:16px;
+  }
+  .btn-ghost:hover{border-color:rgba(0,229,255,0.4);background:rgba(0,229,255,0.07);color:var(--vc-cyan2)}
 
-/* ── BUTTONS ── */
-.btn{
-  display:inline-flex;align-items:center;gap:10px;
-  padding:14px 28px;
-  border:2px solid var(--vc-hot);
-  background:rgba(255,45,120,0.14);
-  color:var(--vc-hot2);
-  font-family:var(--title);font-size:18px;
-  font-weight:400;letter-spacing:2px;
-  cursor:pointer;transition:all .15s;
-  text-transform:uppercase;border-radius:0;
-}
-.btn:hover{background:rgba(255,45,120,0.28);transform:translateY(-1px)}
-.btn:active{transform:translateY(0)}
-.btn-ghost{
-  background:transparent;border:1px solid rgba(255,255,255,.15);
-  color:var(--text2);font-size:16px;
-}
-.btn-ghost:hover{border-color:rgba(0,229,255,0.4);background:rgba(0,229,255,0.07);color:var(--vc-cyan2)}
+  /* ── HUD ── */
+  .hud{
+    display:flex;justify-content:space-between;flex-wrap:wrap;
+    gap:12px;
+    padding:14px 20px;
+    background:rgba(0,0,0,.6);
+    border:1px solid rgba(255,45,120,0.2);
+    border-left:4px solid var(--vc-cyan);
+    margin-bottom:18px;position:relative;
+  }
+  .hud::after{
+    content:'VICE CITY';
+    position:absolute;right:14px;bottom:6px;
+    font-family:var(--title);font-size:9px;
+    color:rgba(255,45,120,0.12);letter-spacing:3px;
+  }
+  .hud-item{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:90px}
+  .hud-lbl{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text3)}
+  .hud-val{
+    font-family:var(--title);font-size:28px;
+    color:var(--vc-cyan2);line-height:1;letter-spacing:1px;
+  }
+  .hud-val.hot{color:var(--vc-hot2)}
+  .hud-val.go{color:var(--vc-green)}
+  .hud-val.warn{color:var(--vc-amber)}
+  .hud-val.danger{color:var(--vc-red);animation:blink .5s ease infinite alternate}
+  @keyframes blink{from{opacity:1}to{opacity:.25}}
+  .lives{display:flex;gap:5px;margin-top:2px}
+  .life-dot{
+    width:30px;height:10px;
+    background:var(--vc-hot);
+    border:1px solid rgba(255,45,120,0.4);
+  }
+  .life-dot.used{
+    background:rgba(255,26,26,0.3);
+    border-color:rgba(255,26,26,0.3);
+  }
 
-/* ── HUD ── */
-.hud{
-  display:flex;justify-content:space-between;
-  padding:14px 20px;
-  background:rgba(0,0,0,.6);
-  border:1px solid rgba(255,45,120,0.2);
-  border-left:4px solid var(--vc-cyan);
-  margin-bottom:18px;position:relative;
-}
-.hud::after{
-  content:'VICE CITY';
-  position:absolute;right:14px;bottom:6px;
-  font-family:var(--title);font-size:9px;
-  color:rgba(255,45,120,0.12);letter-spacing:3px;
-}
-.hud-item{display:flex;flex-direction:column;align-items:center;gap:5px}
-.hud-lbl{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text3)}
-.hud-val{
-  font-family:var(--title);font-size:28px;
-  color:var(--vc-cyan2);line-height:1;letter-spacing:1px;
-}
-.hud-val.hot{color:var(--vc-hot2)}
-.hud-val.go{color:var(--vc-green)}
-.hud-val.warn{color:var(--vc-amber)}
-.hud-val.danger{color:var(--vc-red);animation:blink .5s ease infinite alternate}
-@keyframes blink{from{opacity:1}to{opacity:.25}}
-.lives{display:flex;gap:5px;margin-top:2px}
-.life-dot{
-  width:30px;height:10px;
-  background:var(--vc-hot);
-  border:1px solid rgba(255,45,120,0.4);
-}
-.life-dot.used{
-  background:rgba(255,26,26,0.3);
-  border-color:rgba(255,26,26,0.3);
-}
+  /* ── PROGRESS ── */
+  .prog-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .prog-phase{
+    font-family:var(--mono);font-size:13px;
+    letter-spacing:2px;font-weight:700;text-transform:uppercase;
+  }
+  .prog-phase.watch{color:var(--vc-cyan)}
+  .prog-phase.repeat{color:var(--vc-hot2)}
+  .prog-count{font-family:var(--mono);font-size:12px;color:var(--text3)}
+  .prog-bar{height:5px;background:rgba(255,255,255,.06);margin-bottom:16px}
+  .prog-fill{
+    height:100%;
+    background:linear-gradient(90deg,var(--vc-hot),var(--vc-cyan));
+    transition:width .25s ease;
+  }
 
-/* ── PROGRESS ── */
-.prog-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.prog-phase{
-  font-family:var(--mono);font-size:13px;
-  letter-spacing:2px;font-weight:700;text-transform:uppercase;
-}
-.prog-phase.watch{color:var(--vc-cyan)}
-.prog-phase.repeat{color:var(--vc-hot2)}
-.prog-count{font-family:var(--mono);font-size:12px;color:var(--text3)}
-.prog-bar{height:5px;background:rgba(255,255,255,.06);margin-bottom:16px}
-.prog-fill{
-  height:100%;
-  background:linear-gradient(90deg,var(--vc-hot),var(--vc-cyan));
-  transition:width .25s ease;
-}
+  /* ── GRID ── */
+  .grid{display:grid;gap:10px;margin-bottom:8px}
+  .cell{
+    height:92px;
+    background:rgba(255,45,120,0.04);
+    border:1px solid rgba(255,45,120,0.16);
+    cursor:pointer;transition:all .12s;
+    position:relative;overflow:hidden;
+  }
+  .cell::before{
+    content:'';position:absolute;
+    top:0;left:0;right:0;height:1px;
+    background:rgba(0,229,255,0.08);
+  }
+  .cell::after{
+    content:'';position:absolute;
+    width:7px;height:7px;border-radius:50%;
+    background:rgba(255,45,120,0.18);
+    top:50%;left:50%;transform:translate(-50%,-50%);
+    transition:all .12s;
+  }
+  .cell:hover{
+    border-color:rgba(255,45,120,0.5);
+    background:rgba(255,45,120,0.09);
+  }
+  .cell:hover::after{background:rgba(255,45,120,0.6)}
+  .cell.active{
+    background:rgba(255,45,120,0.22);
+    border-color:rgba(255,95,160,0.9);
+    transform:scale(1.04);
+  }
+  .cell.active::after{background:var(--vc-hot2)}
+  .cell.correct{
+    background:rgba(0,229,255,0.14)!important;
+    border-color:rgba(0,229,255,0.65)!important;
+  }
+  .cell.correct::after{background:var(--vc-cyan)!important}
+  .cell.wrong{
+    background:rgba(255,26,26,0.2)!important;
+    border-color:rgba(255,26,26,0.8)!important;
+    animation:shake .28s ease;
+  }
+  .cell.mistake{
+    background:rgba(255,26,26,0.07)!important;
+    border-color:rgba(255,26,26,0.28)!important;
+  }
+  @keyframes shake{0%,100%{transform:translateX(0)}28%{transform:translateX(-6px)}72%{transform:translateX(6px)}}
 
-/* ── GRID ── */
-.grid{display:grid;gap:10px;margin-bottom:8px}
-.cell{
-  height:88px;
-  background:rgba(255,45,120,0.04);
-  border:1px solid rgba(255,45,120,0.16);
-  cursor:pointer;transition:all .12s;
-  position:relative;overflow:hidden;
-}
-.cell::before{
-  content:'';position:absolute;
-  top:0;left:0;right:0;height:1px;
-  background:rgba(0,229,255,0.08);
-}
-.cell::after{
-  content:'';position:absolute;
-  width:7px;height:7px;border-radius:50%;
-  background:rgba(255,45,120,0.18);
-  top:50%;left:50%;transform:translate(-50%,-50%);
-  transition:all .12s;
-}
-.cell:hover{
-  border-color:rgba(255,45,120,0.5);
-  background:rgba(255,45,120,0.09);
-}
-.cell:hover::after{background:rgba(255,45,120,0.6)}
-.cell.active{
-  background:rgba(255,45,120,0.22);
-  border-color:rgba(255,95,160,0.9);
-  transform:scale(1.04);
-}
-.cell.active::after{background:var(--vc-hot2)}
-.cell.correct{
-  background:rgba(0,229,255,0.14)!important;
-  border-color:rgba(0,229,255,0.65)!important;
-}
-.cell.correct::after{background:var(--vc-cyan)!important}
-.cell.wrong{
-  background:rgba(255,26,26,0.2)!important;
-  border-color:rgba(255,26,26,0.8)!important;
-  animation:shake .28s ease;
-}
-.cell.mistake{
-  background:rgba(255,26,26,0.07)!important;
-  border-color:rgba(255,26,26,0.28)!important;
-}
-@keyframes shake{0%,100%{transform:translateX(0)}28%{transform:translateX(-6px)}72%{transform:translateX(6px)}}
+  .divider{
+    height:1px;
+    background:linear-gradient(90deg,transparent,rgba(255,45,120,0.3),rgba(0,229,255,0.3),transparent);
+    margin:26px 0;
+  }
 
-.divider{
-  height:1px;
-  background:linear-gradient(90deg,transparent,rgba(255,45,120,0.3),rgba(0,229,255,0.3),transparent);
-  margin:26px 0;
-}
+  /* ── GAME OVER ── */
+  .over-screen{text-align:center;padding:6px 0}
+  .over-icon{display:block;margin:0 auto 18px}
+  .over-title{
+    font-family:var(--title);font-size:48px;
+    letter-spacing:3px;line-height:1.1;margin-bottom:8px;
+  }
+  .over-title.win{color:var(--vc-cyan2);text-shadow:0 0 30px rgba(0,229,255,0.4)}
+  .over-title.lose{color:var(--vc-hot2);text-shadow:0 0 30px rgba(255,45,120,0.5)}
+  .over-msg{
+    font-family:var(--mono);font-size:14px;
+    letter-spacing:1px;color:var(--text2);margin-bottom:26px;
+  }
+  .score-big{
+    font-family:var(--title);font-size:76px;font-weight:400;
+    color:var(--vc-yellow);letter-spacing:2px;line-height:1;margin-bottom:4px;
+    text-shadow:0 0 24px rgba(255,224,51,0.35);
+  }
+  .score-lbl{
+    font-family:var(--mono);font-size:11px;
+    letter-spacing:2.5px;text-transform:uppercase;
+    color:var(--text3);margin-bottom:26px;
+  }
+  .btn-row{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
 
-/* ── GAME OVER ── */
-.over-screen{text-align:center;padding:6px 0}
-.over-icon{display:block;margin:0 auto 18px}
-.over-title{
-  font-family:var(--title);font-size:48px;
-  letter-spacing:3px;line-height:1.1;margin-bottom:8px;
-}
-.over-title.win{color:var(--vc-cyan2);text-shadow:0 0 30px rgba(0,229,255,0.4)}
-.over-title.lose{color:var(--vc-hot2);text-shadow:0 0 30px rgba(255,45,120,0.5)}
-.over-msg{
-  font-family:var(--mono);font-size:14px;
-  letter-spacing:1px;color:var(--text2);margin-bottom:26px;
-}
-.score-big{
-  font-family:var(--title);font-size:76px;font-weight:400;
-  color:var(--vc-yellow);letter-spacing:2px;line-height:1;margin-bottom:4px;
-  text-shadow:0 0 24px rgba(255,224,51,0.35);
-}
-.score-lbl{
-  font-family:var(--mono);font-size:11px;
-  letter-spacing:2.5px;text-transform:uppercase;
-  color:var(--text3);margin-bottom:26px;
-}
-.btn-row{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+  /* ── LEADERBOARD ── */
+  .lb-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .lb-title{font-family:var(--title);font-size:18px;letter-spacing:2px;color:var(--vc-hot2)}
+  .lb-empty{
+    text-align:center;font-family:var(--mono);font-size:13px;
+    color:var(--text3);padding:20px;
+    border:1px dashed rgba(255,45,120,0.18);letter-spacing:1px;
+  }
+  .lb-table{width:100%;border-collapse:collapse}
+  .lb-table th{
+    font-family:var(--mono);font-size:10px;font-weight:400;
+    letter-spacing:2px;text-transform:uppercase;color:var(--text3);
+    padding:7px 10px;text-align:left;
+    border-bottom:1px solid rgba(255,45,120,0.18);
+  }
+  .lb-table td{
+    font-family:var(--mono);font-size:14px;
+    padding:10px 10px;
+    border-bottom:1px solid rgba(255,255,255,.03);
+    color:var(--text2);
+  }
+  .lb-table tr:nth-child(2) td{color:var(--vc-yellow)}
+  .lb-rank{color:var(--text3)!important}
 
-/* ── LEADERBOARD ── */
-.lb-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.lb-title{font-family:var(--title);font-size:18px;letter-spacing:2px;color:var(--vc-hot2)}
-.lb-empty{
-  text-align:center;font-family:var(--mono);font-size:13px;
-  color:var(--text3);padding:20px;
-  border:1px dashed rgba(255,45,120,0.18);letter-spacing:1px;
-}
-.lb-table{width:100%;border-collapse:collapse}
-.lb-table th{
-  font-family:var(--mono);font-size:10px;font-weight:400;
-  letter-spacing:2px;text-transform:uppercase;color:var(--text3);
-  padding:7px 10px;text-align:left;
-  border-bottom:1px solid rgba(255,45,120,0.18);
-}
-.lb-table td{
-  font-family:var(--mono);font-size:14px;
-  padding:10px 10px;
-  border-bottom:1px solid rgba(255,255,255,.03);
-  color:var(--text2);
-}
-.lb-table tr:nth-child(2) td{color:var(--vc-yellow)}
-.lb-rank{color:var(--text3)!important}
+  .fade-enter-active,.fade-leave-active{transition:opacity .2s,transform .2s}
+  .fade-enter{opacity:0;transform:translateY(6px)}
+  .fade-leave-to{opacity:0;transform:translateY(-6px)}
+  .admin-btn{position:absolute;bottom:6px;left:6px;width:26px;height:26px;opacity:0;border:none;background:none;cursor:pointer}
 
-.fade-enter-active,.fade-leave-active{transition:opacity .2s,transform .2s}
-.fade-enter{opacity:0;transform:translateY(6px)}
-.fade-leave-to{opacity:0;transform:translateY(-6px)}
-.admin-btn{position:absolute;bottom:6px;left:6px;width:26px;height:26px;opacity:0;border:none;background:none;cursor:pointer}
-</style>
+  /* small screens: keep visible without clipping */
+  @media (max-width:860px){
+    .card{width:100%;padding:28px 24px 30px}
+    .cell{height:84px}
+  }
+  @media (max-width:600px){
+    .cell{height:76px}
+    .hud-item{min-width:72px}
+  }
+  </style>
+</head>
+<body>
+  <div id="app" class="card">
 
-<div id="app" class="card">
-
-  <div class="header">
-    <div class="logo-wrap">
-      <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-        <polygon points="20,4 24,14 35,14 27,21 30,32 20,25 10,32 13,21 5,14 16,14" fill="rgba(255,45,120,0.15)" stroke="#ff2d78" stroke-width="1.2"/>
-        <circle cx="20" cy="20" r="4.5" fill="#ff2d78" opacity=".85"/>
-        <circle cx="20" cy="20" r="1.8" fill="#0d0118"/>
-        <line x1="20" y1="2" x2="20" y2="7" stroke="#00e5ff" stroke-width="1.2"/>
-      </svg>
-    </div>
-    <div>
-      <div class="brand-name">Think &amp; Blink</div>
-      <div class="brand-sub">Vice City · Memory Hustle</div>
-    </div>
-    <div class="header-stars">
-      <div class="star" v-for="n in 5" :class="{lit:n<=starsEarned}"></div>
-    </div>
-  </div>
-
-  <!-- INTRO -->
-  <transition name="fade">
-  <div v-if="screen==='intro'" key="intro">
-    <div class="briefing">
-      <div class="brief-title">[ Mission Briefing ]</div>
-      <p>Tommy, listen up. Watch the grid light up in sequence,<br>then tap the tiles in the same order. Screw up twice — you're done.</p>
-    </div>
-    <div class="wanted-bar">
-      <span class="wanted-lbl">Wanted Level</span>
-      <div class="wanted-stars">
-        <div class="w-star" v-for="n in 6" :class="{lit:n<=Math.ceil((lastCompletedLevel||0)/2)}"></div>
+    <div class="header">
+      <div class="logo-wrap">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+          <polygon points="20,4 24,14 35,14 27,21 30,32 20,25 10,32 13,21 5,14 16,14" fill="rgba(255,45,120,0.15)" stroke="#ff2d78" stroke-width="1.2"/>
+          <circle cx="20" cy="20" r="4.5" fill="#ff2d78" opacity=".85"/>
+          <circle cx="20" cy="20" r="1.8" fill="#0d0118"/>
+          <line x1="20" y1="2" x2="20" y2="7" stroke="#00e5ff" stroke-width="1.2"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-name">Think &amp; Blink</div>
+        <div class="brand-sub">Vice City · Memory Hustle</div>
+      </div>
+      <div class="header-stars">
+        <div class="star" v-for="n in 5" :class="{lit:n<=starsEarned}"></div>
       </div>
     </div>
-    <div class="field">
-      <svg class="field-icon" width="16" height="16" viewBox="0 0 14 14" fill="none">
-        <circle cx="7" cy="4.5" r="2.5" stroke="currentColor" stroke-width="1.3"/>
-        <path d="M1.5 12c0-3 2.5-4.5 5.5-4.5s5.5 1.5 5.5 4.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-      </svg>
-      <input v-model="name" placeholder="Your name, Tommy…" @keyup.enter="startGame"/>
-    </div>
-    <button class="btn" @click="startGame">
-      <svg width="12" height="12" viewBox="0 0 10 10" fill="none"><path d="M1 1.5L9 5L1 8.5V1.5Z" fill="currentColor"/></svg>
-      Start Mission
-    </button>
-    <div class="divider"></div>
-    <div class="lb-head">
-      <svg width="16" height="16" viewBox="0 0 14 14" fill="none">
-        <path d="M7 9V11.5M5 11.5H9M3.5 2H10.5V6A3.5 3.5 0 0 1 7 9 3.5 3.5 0 0 1 3.5 6V2Z" stroke="#ff2d78" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <span class="lb-title">Most Wanted</span>
-    </div>
-    <div id="lb-intro"></div>
-  </div>
-  </transition>
 
-  <!-- GAME -->
-  <transition name="fade">
-  <div v-if="screen==='game'" key="game">
-    <div class="hud">
-      <div class="hud-item">
-        <span class="hud-lbl">Mission</span>
-        <span class="hud-val hot">{{ level }}</span>
+    <!-- INTRO -->
+    <transition name="fade">
+    <div v-if="screen==='intro'" key="intro">
+      <div class="briefing">
+        <div class="brief-title">[ Mission Briefing ]</div>
+        <p>Tommy, listen up. Watch the grid light up in sequence,<br>then tap the tiles in the same order. Screw up twice — you're done.</p>
       </div>
-      <div class="hud-item">
-        <span class="hud-lbl">Cash</span>
-        <span class="hud-val">${{ score }}</span>
-      </div>
-      <div class="hud-item">
-        <span class="hud-lbl">Turf</span>
-        <span class="hud-val hot">{{ gridSize }}x{{ gridSize }}</span>
-      </div>
-      <div class="hud-item">
-        <span class="hud-lbl">Clock</span>
-        <span class="hud-val" :class="timerClass">{{ timer }}s</span>
-      </div>
-      <div class="hud-item">
-        <span class="hud-lbl">Lives</span>
-        <div class="lives">
-          <div class="life-dot" :class="{used:mistakes>=1}"></div>
-          <div class="life-dot" :class="{used:mistakes>=2}"></div>
+      <div class="wanted-bar">
+        <span class="wanted-lbl">Wanted Level</span>
+        <div class="wanted-stars">
+          <div class="w-star" v-for="n in 6" :class="{lit:n<=Math.ceil((lastCompletedLevel||0)/2)}"></div>
         </div>
       </div>
-    </div>
-    <div class="prog-row">
-      <span class="prog-phase" :class="waitingInput?'repeat':'watch'">
-        {{ waitingInput ? '[ Your Move ]' : '[ Watch It ]' }}
-      </span>
-      <span class="prog-count" v-if="waitingInput">{{ user.length }} / {{ pattern.length }}</span>
-    </div>
-    <div class="prog-bar">
-      <div class="prog-fill" :style="{width:progressPct+'%'}"></div>
-    </div>
-    <div class="grid" :style="gridStyle">
-      <div v-for="(c,i) in grid" :key="i" class="cell" :class="cellClass(i)" @click="clickCell(i)"></div>
-    </div>
-  </div>
-  </transition>
-
-  <!-- GAME OVER -->
-  <transition name="fade">
-  <div v-if="screen==='over'" key="over" class="over-screen">
-    <svg v-if="won" class="over-icon" width="72" height="72" viewBox="0 0 60 60" fill="none">
-      <polygon points="30,4 36,19 53,19 40,29 45,46 30,36 15,46 20,29 7,19 24,19" fill="rgba(0,229,255,0.1)" stroke="#00e5ff" stroke-width="1.4"/>
-      <path d="M18 30L26 38L42 22" stroke="#00e5ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-    <svg v-else class="over-icon" width="72" height="72" viewBox="0 0 60 60" fill="none">
-      <polygon points="30,4 36,19 53,19 40,29 45,46 30,36 15,46 20,29 7,19 24,19" fill="rgba(255,45,120,0.1)" stroke="#ff2d78" stroke-width="1.4"/>
-      <path d="M20 20L40 40M40 20L20 40" stroke="#ff2d78" stroke-width="2.5" stroke-linecap="round"/>
-    </svg>
-    <div class="over-title" :class="won?'win':'lose'">{{ won ? 'Mission Passed!' : 'Busted!' }}</div>
-    <div class="over-msg">{{ won ? 'Vice City belongs to you, Tommy.' : 'You got played, '+(name||'Tommy')+'. Hit the streets again.' }}</div>
-    <div class="score-big">${{ score }}</div>
-    <div class="score-lbl">Cash Earned</div>
-    <div class="btn-row">
+      <div class="field">
+        <svg class="field-icon" width="16" height="16" viewBox="0 0 14 14" fill="none">
+          <circle cx="7" cy="4.5" r="2.5" stroke="currentColor" stroke-width="1.3"/>
+          <path d="M1.5 12c0-3 2.5-4.5 5.5-4.5s5.5 1.5 5.5 4.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+        </svg>
+        <input v-model="name" placeholder="Your name, Tommy…" @keyup.enter="startGame"/>
+      </div>
       <button class="btn" @click="startGame">
         <svg width="12" height="12" viewBox="0 0 10 10" fill="none"><path d="M1 1.5L9 5L1 8.5V1.5Z" fill="currentColor"/></svg>
-        Retry Mission
+        Start Mission
       </button>
-      <button class="btn btn-ghost" @click="goMenu">
-        <svg width="13" height="13" viewBox="0 0 12 12" fill="none">
-          <path d="M1.5 6a4.5 4.5 0 1 0 .85-2.65M1.5 3.5V6H4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+      <div class="divider"></div>
+      <div class="lb-head">
+        <svg width="16" height="16" viewBox="0 0 14 14" fill="none">
+          <path d="M7 9V11.5M5 11.5H9M3.5 2H10.5V6A3.5 3.5 0 0 1 7 9 3.5 3.5 0 0 1 3.5 6V2Z" stroke="#ff2d78" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-        Menu
-      </button>
+        <span class="lb-title">Most Wanted</span>
+      </div>
+      <div id="lb-intro"></div>
     </div>
-    <div class="divider"></div>
-    <div class="lb-head">
-      <svg width="16" height="16" viewBox="0 0 14 14" fill="none">
-        <path d="M7 9V11.5M5 11.5H9M3.5 2H10.5V6A3.5 3.5 0 0 1 7 9 3.5 3.5 0 0 1 3.5 6V2Z" stroke="#ff2d78" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+    </transition>
+
+    <!-- GAME -->
+    <transition name="fade">
+    <div v-if="screen==='game'" key="game">
+      <div class="hud">
+        <div class="hud-item">
+          <span class="hud-lbl">Mission</span>
+          <span class="hud-val hot">{{ level }}</span>
+        </div>
+        <div class="hud-item">
+          <span class="hud-lbl">Cash</span>
+          <span class="hud-val">${{ score }}</span>
+        </div>
+        <div class="hud-item">
+          <span class="hud-lbl">Turf</span>
+          <span class="hud-val hot">{{ gridSize }}x{{ gridSize }}</span>
+        </div>
+        <div class="hud-item">
+          <span class="hud-lbl">Clock</span>
+          <span class="hud-val" :class="timerClass">{{ timer }}s</span>
+        </div>
+        <div class="hud-item">
+          <span class="hud-lbl">Lives</span>
+          <div class="lives">
+            <div class="life-dot" :class="{used:mistakes>=1}"></div>
+            <div class="life-dot" :class="{used:mistakes>=2}"></div>
+          </div>
+        </div>
+      </div>
+      <div class="prog-row">
+        <span class="prog-phase" :class="waitingInput?'repeat':'watch'">
+          {{ waitingInput ? '[ Your Move ]' : '[ Watch It ]' }}
+        </span>
+        <span class="prog-count" v-if="waitingInput">{{ user.length }} / {{ pattern.length }}</span>
+      </div>
+      <div class="prog-bar">
+        <div class="prog-fill" :style="{width:progressPct+'%'}"></div>
+      </div>
+      <div class="grid" :style="gridStyle">
+        <div v-for="(c,i) in grid" :key="i" class="cell" :class="cellClass(i)" @click="clickCell(i)"></div>
+      </div>
+    </div>
+    </transition>
+
+    <!-- GAME OVER -->
+    <transition name="fade">
+    <div v-if="screen==='over'" key="over" class="over-screen">
+      <svg v-if="won" class="over-icon" width="72" height="72" viewBox="0 0 60 60" fill="none">
+        <polygon points="30,4 36,19 53,19 40,29 45,46 30,36 15,46 20,29 7,19 24,19" fill="rgba(0,229,255,0.1)" stroke="#00e5ff" stroke-width="1.4"/>
+        <path d="M18 30L26 38L42 22" stroke="#00e5ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
-      <span class="lb-title">Most Wanted</span>
+      <svg v-else class="over-icon" width="72" height="72" viewBox="0 0 60 60" fill="none">
+        <polygon points="30,4 36,19 53,19 40,29 45,46 30,36 15,46 20,29 7,19 24,19" fill="rgba(255,45,120,0.1)" stroke="#ff2d78" stroke-width="1.4"/>
+        <path d="M20 20L40 40M40 20L20 40" stroke="#ff2d78" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+      <div class="over-title" :class="won?'win':'lose'">{{ won ? 'Mission Passed!' : 'Busted!' }}</div>
+      <div class="over-msg">{{ won ? 'Vice City belongs to you, Tommy.' : 'You got played, '+(name||'Tommy')+'. Hit the streets again.' }}</div>
+      <div class="score-big">${{ score }}</div>
+      <div class="score-lbl">Cash Earned</div>
+      <div class="btn-row">
+        <button class="btn" @click="startGame">
+          <svg width="12" height="12" viewBox="0 0 10 10" fill="none"><path d="M1 1.5L9 5L1 8.5V1.5Z" fill="currentColor"/></svg>
+          Retry Mission
+        </button>
+        <button class="btn btn-ghost" @click="goMenu">
+          <svg width="13" height="13" viewBox="0 0 12 12" fill="none">
+            <path d="M1.5 6a4.5 4.5 0 1 0 .85-2.65M1.5 3.5V6H4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Menu
+        </button>
+      </div>
+      <div class="divider"></div>
+      <div class="lb-head">
+        <svg width="16" height="16" viewBox="0 0 14 14" fill="none">
+          <path d="M7 9V11.5M5 11.5H9M3.5 2H10.5V6A3.5 3.5 0 0 1 7 9 3.5 3.5 0 0 1 3.5 6V2Z" stroke="#ff2d78" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="lb-title">Most Wanted</span>
+      </div>
+      <div id="lb-over"></div>
     </div>
-    <div id="lb-over"></div>
+    </transition>
+
+    <button class="admin-btn" @click="toggleAdmin"></button>
   </div>
-  </transition>
 
-  <button class="admin-btn" @click="toggleAdmin"></button>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
-<script>
-const LEVELS=[
-  {gridSize:3,patternLen:4,flashSpeed:560,baseTimer:20},
-  {gridSize:3,patternLen:5,flashSpeed:520,baseTimer:22},
-  {gridSize:3,patternLen:6,flashSpeed:490,baseTimer:22},
-  {gridSize:4,patternLen:7,flashSpeed:460,baseTimer:24},
-  {gridSize:4,patternLen:8,flashSpeed:430,baseTimer:26},
-  {gridSize:4,patternLen:9,flashSpeed:400,baseTimer:26},
-  {gridSize:5,patternLen:10,flashSpeed:370,baseTimer:28},
-  {gridSize:5,patternLen:11,flashSpeed:340,baseTimer:28},
-  {gridSize:5,patternLen:13,flashSpeed:310,baseTimer:30},
-  {gridSize:6,patternLen:14,flashSpeed:280,baseTimer:30},
-];
-new Vue({
-  el:'#app',
-  data:{
-    name:'',screen:'intro',level:1,score:0,
-    timer:0,timerInt:null,grid:[],pattern:[],user:[],
-    activeIndex:-1,clickedIndex:-1,clickState:'',mistakeIndex:-1,
-    waitingInput:false,locked:false,mistakes:0,won:false,lastCompletedLevel:0,
-  },
-  computed:{
-    cfg(){return LEVELS[this.level-1]||LEVELS[LEVELS.length-1]},
-    gridSize(){return this.cfg.gridSize},
-    gridStyle(){return{gridTemplateColumns:`repeat(${this.gridSize},1fr)`}},
-    progressPct(){
-      if(!this.waitingInput||!this.pattern.length)return 0;
-      return(this.user.length/this.pattern.length)*100;
+  <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+  <script>
+  const LEVELS=[
+    {gridSize:3,patternLen:4,flashSpeed:560,baseTimer:20},
+    {gridSize:3,patternLen:5,flashSpeed:520,baseTimer:22},
+    {gridSize:3,patternLen:6,flashSpeed:490,baseTimer:22},
+    {gridSize:4,patternLen:7,flashSpeed:460,baseTimer:24},
+    {gridSize:4,patternLen:8,flashSpeed:430,baseTimer:26},
+    {gridSize:4,patternLen:9,flashSpeed:400,baseTimer:26},
+    {gridSize:5,patternLen:10,flashSpeed:370,baseTimer:28},
+    {gridSize:5,patternLen:11,flashSpeed:340,baseTimer:28},
+    {gridSize:5,patternLen:13,flashSpeed:310,baseTimer:30},
+    {gridSize:6,patternLen:14,flashSpeed:280,baseTimer:30},
+  ];
+  new Vue({
+    el:'#app',
+    data:{
+      name:'',screen:'intro',level:1,score:0,
+      timer:0,timerInt:null,grid:[],pattern:[],user:[],
+      activeIndex:-1,clickedIndex:-1,clickState:'',mistakeIndex:-1,
+      waitingInput:false,locked:false,mistakes:0,won:false,lastCompletedLevel:0,
     },
-    timerClass(){
-      if(this.timer<=5)return'hud-val danger';
-      if(this.timer<=10)return'hud-val warn';
-      return'hud-val go';
+    computed:{
+      cfg(){return LEVELS[this.level-1]||LEVELS[LEVELS.length-1]},
+      gridSize(){return this.cfg.gridSize},
+      gridStyle(){return{gridTemplateColumns:`repeat(${this.gridSize},1fr)`}},
+      progressPct(){
+        if(!this.waitingInput||!this.pattern.length)return 0;
+        return(this.user.length/this.pattern.length)*100;
+      },
+      timerClass(){
+        if(this.timer<=5)return'hud-val danger';
+        if(this.timer<=10)return'hud-val warn';
+        return'hud-val go';
+      },
+      starsEarned(){return Math.min(5,Math.ceil((this.lastCompletedLevel||0)/2))},
     },
-    starsEarned(){return Math.min(5,Math.ceil((this.lastCompletedLevel||0)/2))},
-  },
-  mounted(){this.renderLB('lb-intro')},
-  methods:{
-    cellClass(i){
-      const c=[];
-      if(this.activeIndex===i)c.push('active');
-      if(this.mistakeIndex===i)c.push('mistake');
-      if(this.clickedIndex===i&&this.clickState)c.push(this.clickState);
-      return c;
-    },
-    startGame(){
-      this.level=1;this.score=0;
-      this.lastCompletedLevel=0;this.won=false;
-      this.screen='game';this.startLevel();
-    },
-    startLevel(){
-      const sz=this.cfg.gridSize,len=this.cfg.patternLen;
-      this.grid=Array(sz*sz).fill(0);
-      this.pattern=[];let prev=-1;
-      for(let i=0;i<len;i++){
-        let n;
-        do{n=Math.floor(Math.random()*this.grid.length)}while(n===prev);
-        this.pattern.push(n);prev=n;
-      }
-      this.user=[];this.mistakes=0;this.locked=false;
-      this.timer=this.cfg.baseTimer;this.waitingInput=false;
-      this.activeIndex=-1;this.clickedIndex=-1;
-      this.clickState='';this.mistakeIndex=-1;
-      clearInterval(this.timerInt);
-      this.showPattern();
-    },
-    showPattern(){
-      let i=0;const spd=this.cfg.flashSpeed;
-      const onDur=Math.round(spd*.52);
-      const tick=setInterval(()=>{
-        this.activeIndex=this.pattern[i];
-        setTimeout(()=>{this.activeIndex=-1},onDur);
-        i++;
-        if(i>=this.pattern.length){
-          clearInterval(tick);
-          setTimeout(()=>{this.waitingInput=true;this.startTimer()},540);
+    mounted(){this.renderLB('lb-intro')},
+    methods:{
+      cellClass(i){
+        const c=[];
+        if(this.activeIndex===i)c.push('active');
+        if(this.mistakeIndex===i)c.push('mistake');
+        if(this.clickedIndex===i&&this.clickState)c.push(this.clickState);
+        return c;
+      },
+      startGame(){
+        this.level=1;this.score=0;
+        this.lastCompletedLevel=0;this.won=false;
+        this.screen='game';this.startLevel();
+      },
+      startLevel(){
+        const sz=this.cfg.gridSize,len=this.cfg.patternLen;
+        this.grid=Array(sz*sz).fill(0);
+        this.pattern=[];let prev=-1;
+        for(let i=0;i<len;i++){
+          let n;
+          do{n=Math.floor(Math.random()*this.grid.length)}while(n===prev);
+          this.pattern.push(n);prev=n;
         }
-      },spd);
-    },
-    startTimer(){
-      clearInterval(this.timerInt);
-      this.timerInt=setInterval(()=>{
-        if(!this.waitingInput)return;
-        this.timer--;
-        if(this.timer<=0)this.endGame(false);
-      },1000);
-    },
-    clickCell(i){
-      if(!this.waitingInput||this.locked)return;
-      const expected=this.pattern[this.user.length];
-      if(i!==expected){
-        this.mistakes++;
-        this.clickedIndex=i;this.clickState='wrong';this.locked=true;
-        if(this.mistakes>=2){
-          setTimeout(()=>{this.clickedIndex=-1;this.clickState='';this.endGame(false)},420);
-        }else{
-          setTimeout(()=>{
-            this.mistakeIndex=i;
-            this.clickedIndex=-1;this.clickState='';this.locked=false;
-            setTimeout(()=>{this.mistakeIndex=-1},1200);
-          },420);
-        }
-        return;
-      }
-      this.mistakeIndex=-1;
-      this.clickedIndex=i;this.clickState='correct';
-      this.user.push(i);
-      setTimeout(()=>{this.clickedIndex=-1;this.clickState=''},200);
-      if(this.user.length===this.pattern.length){
-        this.lastCompletedLevel=this.level;
-        this.score+=100+this.timer*5+this.level*20;
-        this.waitingInput=false;
+        this.user=[];this.mistakes=0;this.locked=false;
+        this.timer=this.cfg.baseTimer;this.waitingInput=false;
+        this.activeIndex=-1;this.clickedIndex=-1;
+        this.clickState='';this.mistakeIndex=-1;
         clearInterval(this.timerInt);
-        if(this.level>=LEVELS.length){
-          setTimeout(()=>this.endGame(true),500);
-        }else{
-          this.level++;
-          setTimeout(()=>this.startLevel(),700);
+        this.showPattern();
+      },
+      showPattern(){
+        let i=0;const spd=this.cfg.flashSpeed;
+        const onDur=Math.round(spd*.52);
+        const tick=setInterval(()=>{
+          this.activeIndex=this.pattern[i];
+          setTimeout(()=>{this.activeIndex=-1},onDur);
+          i++;
+          if(i>=this.pattern.length){
+            clearInterval(tick);
+            setTimeout(()=>{this.waitingInput=true;this.startTimer()},540);
+          }
+        },spd);
+      },
+      startTimer(){
+        clearInterval(this.timerInt);
+        this.timerInt=setInterval(()=>{
+          if(!this.waitingInput)return;
+          this.timer--;
+          if(this.timer<=0)this.endGame(false);
+        },1000);
+      },
+      clickCell(i){
+        if(!this.waitingInput||this.locked)return;
+        const expected=this.pattern[this.user.length];
+        if(i!==expected){
+          this.mistakes++;
+          this.clickedIndex=i;this.clickState='wrong';this.locked=true;
+          if(this.mistakes>=2){
+            setTimeout(()=>{this.clickedIndex=-1;this.clickState='';this.endGame(false)},420);
+          }else{
+            setTimeout(()=>{
+              this.mistakeIndex=i;
+              this.clickedIndex=-1;this.clickState='';this.locked=false;
+              setTimeout(()=>{this.mistakeIndex=-1},1200);
+            },420);
+          }
+          return;
         }
-      }
+        this.mistakeIndex=-1;
+        this.clickedIndex=i;this.clickState='correct';
+        this.user.push(i);
+        setTimeout(()=>{this.clickedIndex=-1;this.clickState=''},200);
+        if(this.user.length===this.pattern.length){
+          this.lastCompletedLevel=this.level;
+          this.score+=100+this.timer*5+this.level*20;
+          this.waitingInput=false;
+          clearInterval(this.timerInt);
+          if(this.level>=LEVELS.length){
+            setTimeout(()=>this.endGame(true),500);
+          }else{
+            this.level++;
+            setTimeout(()=>this.startLevel(),700);
+          }
+        }
+      },
+      endGame(didWin){
+        this.won=didWin;this.screen='over';
+        clearInterval(this.timerInt);
+        this.saveScore(this.lastCompletedLevel);
+        this.$nextTick(()=>this.renderLB('lb-over'));
+      },
+      goMenu(){
+        this.screen='intro';
+        this.$nextTick(()=>this.renderLB('lb-intro'));
+      },
+      saveScore(lv){
+        let d=JSON.parse(localStorage.getItem('tbl_vc'))||[];
+        d.push({name:this.name||'Tommy',score:this.score,level:lv,time:this.timer});
+        d.sort((a,b)=>b.level-a.level||b.score-a.score||b.time-a.time);
+        localStorage.setItem('tbl_vc',JSON.stringify(d));
+      },
+      renderLB(id){
+        const el=document.getElementById(id);if(!el)return;
+        const d=JSON.parse(localStorage.getItem('tbl_vc'))||[];
+        if(!d.length){
+          el.innerHTML='<div class="lb-empty">No records yet — be the first to own Vice City</div>';return;
+        }
+        let h='<table class="lb-table"><tr><th>#</th><th>Name</th><th>Cash</th><th>Mission</th><th>Time</th></tr>';
+        d.slice(0,10).forEach((r,i)=>{
+          h+=`<tr><td class="lb-rank">${i+1}</td><td>${r.name}</td><td>$${r.score}</td><td>${r.level}</td><td>${r.time}s</td></tr>`;
+        });
+        el.innerHTML=h+'</table>';
+      },
+      toggleAdmin(){
+        localStorage.removeItem('tbl_vc');
+        this.renderLB('lb-intro');this.renderLB('lb-over');
+      },
     },
-    endGame(didWin){
-      this.won=didWin;this.screen='over';
-      clearInterval(this.timerInt);
-      this.saveScore(this.lastCompletedLevel);
-      this.$nextTick(()=>this.renderLB('lb-over'));
-    },
-    goMenu(){
-      this.screen='intro';
-      this.$nextTick(()=>this.renderLB('lb-intro'));
-    },
-    saveScore(lv){
-      let d=JSON.parse(localStorage.getItem('tbl_vc'))||[];
-      d.push({name:this.name||'Tommy',score:this.score,level:lv,time:this.timer});
-      d.sort((a,b)=>b.level-a.level||b.score-a.score||b.time-a.time);
-      localStorage.setItem('tbl_vc',JSON.stringify(d));
-    },
-    renderLB(id){
-      const el=document.getElementById(id);if(!el)return;
-      const d=JSON.parse(localStorage.getItem('tbl_vc'))||[];
-      if(!d.length){
-        el.innerHTML='<div class="lb-empty">No records yet — be the first to own Vice City</div>';return;
-      }
-      let h='<table class="lb-table"><tr><th>#</th><th>Name</th><th>Cash</th><th>Mission</th><th>Time</th></tr>';
-      d.slice(0,10).forEach((r,i)=>{
-        h+=`<tr><td class="lb-rank">${i+1}</td><td>${r.name}</td><td>$${r.score}</td><td>${r.level}</td><td>${r.time}s</td></tr>`;
-      });
-      el.innerHTML=h+'</table>';
-    },
-    toggleAdmin(){
-      localStorage.removeItem('tbl_vc');
-      this.renderLB('lb-intro');this.renderLB('lb-over');
-    },
-  },
-});
-</script>
+  });
+  </script>
+</body>
+</html>
