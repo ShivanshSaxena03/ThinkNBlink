@@ -5,27 +5,63 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Think & Blink - AI Tronics</title>
   <link href="https://fonts.googleapis.com/css2?family=Pricedown+Bl&family=Oswald:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href='data:image/svg+xml;utf8,
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+      <defs>
+        <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0%" stop-color="%2300d4ff"/>
+          <stop offset="100%" stop-color="%234361ee"/>
+        </linearGradient>
+      </defs>
+
+      <rect width="64" height="64" rx="12" fill="%230b1220"/>
+
+      <path d="M32 14c-6 0-10 4-10 9 0 1-2 2-2 5s2 4 3 5c-1 1-2 2-2 4 0 4 3 7 8 7h6c5 0 8-3 8-7 0-2-1-3-2-4 1-1 3-2 3-5s-2-4-2-5c0-5-4-9-10-9z"
+            fill="url(%23g)" opacity="0.9"/>
+
+      <g stroke="%2300d4ff" stroke-width="1.5" stroke-linecap="round">
+        <line x1="20" y1="28" x2="14" y2="28"/>
+        <circle cx="12" cy="28" r="2" fill="%2300d4ff"/>
+
+        <line x1="44" y1="28" x2="50" y2="28"/>
+        <circle cx="52" cy="28" r="2" fill="%2300d4ff"/>
+
+        <line x1="32" y1="44" x2="32" y2="52"/>
+        <circle cx="32" cy="54" r="2" fill="%2300d4ff"/>
+      </g>
+
+      <circle cx="26" cy="30" r="2.5" fill="%230b1220"/>
+      <circle cx="38" cy="30" r="2.5" fill="%230b1220"/>
+
+      <circle cx="32" cy="32" r="18" fill="none" stroke="%2300d4ff" stroke-opacity="0.2"/>
+    </svg>'>
   <style>
-  :root{
-    --vc-bg:#4d073e;
-    --vc-surface:rgba(41, 2, 31, 0.98);
-    --vc-hot:#ff2d78;
-    --vc-hot2:#ff5fa0;
-    --vc-cyan:#00e5ff;
-    --vc-cyan2:#80f0ff;
-    --vc-yellow:#ffe033;
-    --vc-purple:#c026d3;
-    --vc-purple2:#e040fb;
-    --vc-green:#39ff14;
-    --vc-red:#ff1a1a;
-    --vc-amber:#ffb800;
-    --text:#ffe8f5;
-    --text2:#c080a0;
-    --text3:#704060;
-    --mono:'Share Tech Mono',monospace;
-    --sans:'Oswald',sans-serif;
-    --title:'Pricedown Bl','Impact',sans-serif;
-  }
+:root{
+  --vc-bg:#121212;                  /* deep neutral dark */
+  --vc-surface:rgba(24, 24, 24, 0.96);
+
+  --vc-hot:#FF7A00;                 /* primary (sunset orange) */
+  --vc-hot2:#FF4D6D;                /* accent (coral pink) */
+
+  --vc-cyan:#2EC4B6;                /* palm green */
+  --vc-cyan2:#7de3d9;
+
+  --vc-yellow:#FFC300;              /* golden highlight */
+  --vc-purple:#d65a8c;              /* muted coral mix */
+  --vc-purple2:#ff8fab;
+
+  --vc-green:#2EC4B6;
+  --vc-red:#e63946;
+  --vc-amber:#ff9f1c;
+
+  --text:#f5f5f5;
+  --text2:#bdbdbd;
+  --text3:#6c6c6c;
+
+  --mono:'Share Tech Mono',monospace;
+  --sans:'Oswald',sans-serif;
+  --title:'Pricedown Bl','Impact',sans-serif;
+}
   *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
   body{
     background:var(--vc-bg);font-family:var(--sans);
