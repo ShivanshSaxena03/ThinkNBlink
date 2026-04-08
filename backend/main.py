@@ -57,3 +57,8 @@ async def websocket_endpoint(websocket: WebSocket):
         if websocket in clients:
             clients.remove(websocket)
         print("❌ Disconnected")
+@app.post("/clear")
+async def clear_leaderboard():
+    global leaderboard
+    leaderboard = []
+    return {"message": "Leaderboard cleared"}
