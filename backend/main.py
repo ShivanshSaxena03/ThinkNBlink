@@ -1,7 +1,15 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-
+from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # or your domain
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 clients = []
 leaderboard = []
 

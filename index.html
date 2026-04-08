@@ -455,8 +455,9 @@
 let socket;
 
 function connectWebSocket() {
-  socket = new WebSocket("ws://127.0.0.1:8000/ws");
-
+  socket = new WebSocket("");
+  // const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+  // const socket = new WebSocket(protocol + window.location.host + "/ws");
   socket.onopen = () => {
     console.log("✅ Connected to WebSocket");
   };
