@@ -59,7 +59,7 @@
     margin-bottom:26px;padding-bottom:20px;
     border-bottom:1px solid rgba(255,45,120,0.25);
   }
-  .logo-wrap{
+  .logo-wrap{ 
     width:58px;height:58px;
     background:rgba(255,45,120,0.08);
     border:1px solid rgba(255,45,120,0.35);
@@ -450,161 +450,288 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
-  <script>
-  const LEVELS=[
-    {gridSize:3,patternLen:4,flashSpeed:560,baseTimer:20},
-    {gridSize:3,patternLen:5,flashSpeed:520,baseTimer:22},
-    {gridSize:3,patternLen:6,flashSpeed:490,baseTimer:22},
-    {gridSize:4,patternLen:7,flashSpeed:460,baseTimer:24},
-    {gridSize:4,patternLen:8,flashSpeed:430,baseTimer:26},
-    {gridSize:4,patternLen:9,flashSpeed:400,baseTimer:26},
-    {gridSize:5,patternLen:10,flashSpeed:370,baseTimer:28},
-    {gridSize:5,patternLen:11,flashSpeed:340,baseTimer:28},
-    {gridSize:5,patternLen:13,flashSpeed:310,baseTimer:30},
-    {gridSize:6,patternLen:14,flashSpeed:280,baseTimer:30},
-  ];
-  new Vue({
-    el:'#app',
-    data:{
-      name:'',screen:'intro',level:1,score:0,
-      timer:0,timerInt:null,grid:[],pattern:[],user:[],
-      activeIndex:-1,clickedIndex:-1,clickState:'',mistakeIndex:-1,
-      waitingInput:false,locked:false,mistakes:0,won:false,lastCompletedLevel:0,
+<script>
+// 🔥 AUTO RECONNECTING WEBSOCKET
+let socket;
+
+function connectWebSocket() {
+  socket = new WebSocket("ws://127.0.0.1:8000/ws");
+
+  socket.onopen = () => {
+    console.log("✅ Connected to WebSocket");
+  };
+
+  socket.onmessage = (event) => {
+    console.log("📩 Received:", event.data);
+
+    const msg = JSON.parse(event.data);
+
+    if (msg.type === "leaderboard") {
+      window.globalLeaderboard = msg.data;
+      renderLeaderboardFromServer();
+    }
+  };
+
+  socket.onerror = (err) => {
+    console.error("❌ WebSocket error", err);
+  };
+
+  socket.onclose = () => {
+    console.log("❌ Socket closed. Reconnecting...");
+    setTimeout(connectWebSocket, 2000); // 🔥 reconnect
+  };
+}
+
+// 🔌 START CONNECTION
+connectWebSocket();
+
+
+// 🌍 Leaderboard Renderer
+function renderLeaderboardFromServer() {
+  const d = window.globalLeaderboard || [];
+  const el1 = document.getElementById("lb-intro");
+  const el2 = document.getElementById("lb-over");
+
+  const render = (el) => {
+    if (!el) return;
+
+    if (!d.length) {
+      el.innerHTML = '<div class="lb-empty">No records yet</div>';
+      return;
+    }
+
+    let h = '<table class="lb-table"><tr><th>#</th><th>Name</th><th>Cash</th><th>Mission</th><th>Time</th></tr>';
+
+    d.slice(0, 10).forEach((r, i) => {
+      h += `<tr>
+        <td>${i + 1}</td>
+        <td>${r.name}</td>
+        <td>$${r.score}</td>
+        <td>${r.level}</td>
+        <td>${r.time}s</td>
+      </tr>`;
+    });
+
+    el.innerHTML = h + "</table>";
+  };
+
+  render(el1);
+  render(el2);
+}
+
+
+// 🎮 GAME CONFIG
+const LEVELS = [
+  {gridSize:3,patternLen:4,flashSpeed:560,baseTimer:20},
+  {gridSize:3,patternLen:5,flashSpeed:520,baseTimer:22},
+  {gridSize:3,patternLen:6,flashSpeed:490,baseTimer:22},
+  {gridSize:4,patternLen:7,flashSpeed:460,baseTimer:24},
+  {gridSize:4,patternLen:8,flashSpeed:430,baseTimer:26},
+  {gridSize:4,patternLen:9,flashSpeed:400,baseTimer:26},
+  {gridSize:5,patternLen:10,flashSpeed:370,baseTimer:28},
+  {gridSize:5,patternLen:11,flashSpeed:340,baseTimer:28},
+  {gridSize:5,patternLen:13,flashSpeed:310,baseTimer:30},
+  {gridSize:6,patternLen:14,flashSpeed:280,baseTimer:30},
+];
+
+
+// 🧠 VUE APP
+new Vue({
+  el: '#app',
+
+  data: {
+    name: '',
+    screen: 'intro',
+    level: 1,
+    score: 0,
+    timer: 0,
+    timerInt: null,
+    grid: [],
+    pattern: [],
+    user: [],
+    activeIndex: -1,
+    clickedIndex: -1,
+    clickState: '',
+    mistakeIndex: -1,
+    waitingInput: false,
+    locked: false,
+    mistakes: 0,
+    won: false,
+    lastCompletedLevel: 0,
+  },
+
+  computed: {
+    cfg() { return LEVELS[this.level - 1] || LEVELS[LEVELS.length - 1]; },
+    gridSize() { return this.cfg.gridSize; },
+    gridStyle() { return { gridTemplateColumns: `repeat(${this.gridSize},1fr)` }; },
+    starsEarned() {
+      return Math.min(5, Math.ceil((this.lastCompletedLevel || 0) / 2));
     },
-    computed:{
-      cfg(){return LEVELS[this.level-1]||LEVELS[LEVELS.length-1]},
-      gridSize(){return this.cfg.gridSize},
-      gridStyle(){return{gridTemplateColumns:`repeat(${this.gridSize},1fr)`}},
-      progressPct(){
-        if(!this.waitingInput||!this.pattern.length)return 0;
-        return(this.user.length/this.pattern.length)*100;
-      },
-      timerClass(){
-        if(this.timer<=5)return'hud-val danger';
-        if(this.timer<=10)return'hud-val warn';
-        return'hud-val go';
-      },
-      starsEarned(){return Math.min(5,Math.ceil((this.lastCompletedLevel||0)/2))},
+
+    progressPct() {
+      if (!this.waitingInput || !this.pattern.length) return 0;
+      return (this.user.length / this.pattern.length) * 100;
     },
-    mounted(){this.renderLB('lb-intro')},
-    methods:{
-      cellClass(i){
-        const c=[];
-        if(this.activeIndex===i)c.push('active');
-        if(this.mistakeIndex===i)c.push('mistake');
-        if(this.clickedIndex===i&&this.clickState)c.push(this.clickState);
-        return c;
-      },
-      startGame(){
-        this.level=1;this.score=0;
-        this.lastCompletedLevel=0;this.won=false;
-        this.screen='game';this.startLevel();
-      },
-      startLevel(){
-        const sz=this.cfg.gridSize,len=this.cfg.patternLen;
-        this.grid=Array(sz*sz).fill(0);
-        this.pattern=[];let prev=-1;
-        for(let i=0;i<len;i++){
-          let n;
-          do{n=Math.floor(Math.random()*this.grid.length)}while(n===prev);
-          this.pattern.push(n);prev=n;
-        }
-        this.user=[];this.mistakes=0;this.locked=false;
-        this.timer=this.cfg.baseTimer;this.waitingInput=false;
-        this.activeIndex=-1;this.clickedIndex=-1;
-        this.clickState='';this.mistakeIndex=-1;
-        clearInterval(this.timerInt);
-        this.showPattern();
-      },
-      showPattern(){
-        let i=0;const spd=this.cfg.flashSpeed;
-        const onDur=Math.round(spd*.52);
-        const tick=setInterval(()=>{
-          this.activeIndex=this.pattern[i];
-          setTimeout(()=>{this.activeIndex=-1},onDur);
-          i++;
-          if(i>=this.pattern.length){
-            clearInterval(tick);
-            setTimeout(()=>{this.waitingInput=true;this.startTimer()},540);
-          }
-        },spd);
-      },
-      startTimer(){
-        clearInterval(this.timerInt);
-        this.timerInt=setInterval(()=>{
-          if(!this.waitingInput)return;
-          this.timer--;
-          if(this.timer<=0)this.endGame(false);
-        },1000);
-      },
-      clickCell(i){
-        if(!this.waitingInput||this.locked)return;
-        const expected=this.pattern[this.user.length];
-        if(i!==expected){
-          this.mistakes++;
-          this.clickedIndex=i;this.clickState='wrong';this.locked=true;
-          if(this.mistakes>=2){
-            setTimeout(()=>{this.clickedIndex=-1;this.clickState='';this.endGame(false)},420);
-          }else{
-            setTimeout(()=>{
-              this.mistakeIndex=i;
-              this.clickedIndex=-1;this.clickState='';this.locked=false;
-              setTimeout(()=>{this.mistakeIndex=-1},1200);
-            },420);
-          }
-          return;
-        }
-        this.mistakeIndex=-1;
-        this.clickedIndex=i;this.clickState='correct';
-        this.user.push(i);
-        setTimeout(()=>{this.clickedIndex=-1;this.clickState=''},200);
-        if(this.user.length===this.pattern.length){
-          this.lastCompletedLevel=this.level;
-          this.score+=100+this.timer*5+this.level*20;
-          this.waitingInput=false;
-          clearInterval(this.timerInt);
-          if(this.level>=LEVELS.length){
-            setTimeout(()=>this.endGame(true),500);
-          }else{
-            this.level++;
-            setTimeout(()=>this.startLevel(),700);
-          }
-        }
-      },
-      endGame(didWin){
-        this.won=didWin;this.screen='over';
-        clearInterval(this.timerInt);
-        this.saveScore(this.lastCompletedLevel);
-        this.$nextTick(()=>this.renderLB('lb-over'));
-      },
-      goMenu(){
-        this.screen='intro';
-        this.$nextTick(()=>this.renderLB('lb-intro'));
-      },
-      saveScore(lv){
-        let d=JSON.parse(localStorage.getItem('tbl_vc'))||[];
-        d.push({name:this.name||'Tommy',score:this.score,level:lv,time:this.timer});
-        d.sort((a,b)=>b.level-a.level||b.score-a.score||b.time-a.time);
-        localStorage.setItem('tbl_vc',JSON.stringify(d));
-      },
-      renderLB(id){
-        const el=document.getElementById(id);if(!el)return;
-        const d=JSON.parse(localStorage.getItem('tbl_vc'))||[];
-        if(!d.length){
-          el.innerHTML='<div class="lb-empty">No records yet — be the first to own Vice City</div>';return;
-        }
-        let h='<table class="lb-table"><tr><th>#</th><th>Name</th><th>Cash</th><th>Mission</th><th>Time</th></tr>';
-        d.slice(0,10).forEach((r,i)=>{
-          h+=`<tr><td class="lb-rank">${i+1}</td><td>${r.name}</td><td>$${r.score}</td><td>${r.level}</td><td>${r.time}s</td></tr>`;
-        });
-        el.innerHTML=h+'</table>';
-      },
-      toggleAdmin(){
-        localStorage.removeItem('tbl_vc');
-        this.renderLB('lb-intro');this.renderLB('lb-over');
-      },
+
+    timerClass() {
+      if (this.timer <= 5) return 'danger';
+      if (this.timer <= 10) return 'warn';
+      return 'go';
+    }
+  },
+
+  mounted() {
+    setTimeout(renderLeaderboardFromServer, 300);
+  },
+
+  methods: {
+
+    startGame() {
+      this.level = 1;
+      this.score = 0;
+      this.lastCompletedLevel = 0;
+      this.won = false;
+      this.screen = 'game';
+      this.startLevel();
+      console.log("🔥 Game Started");  // ADD THIS
     },
-  });
-  </script>
+    cellClass(i) {
+    const c = [];
+    if (this.activeIndex === i) c.push('active');
+    return c;
+  },
+    startLevel() {
+      const sz = this.cfg.gridSize;
+      const len = this.cfg.patternLen;
+
+      this.grid = Array(sz * sz).fill(0);
+
+      this.pattern = [];
+      let prev = -1;
+
+      for (let i = 0; i < len; i++) {
+        let n;
+        do {
+          n = Math.floor(Math.random() * this.grid.length);
+        } while (n === prev);
+
+        this.pattern.push(n);
+        prev = n;
+      }
+
+      this.user = [];
+      this.mistakes = 0;
+      this.locked = false;
+      this.timer = this.cfg.baseTimer;
+      this.waitingInput = false;
+
+      clearInterval(this.timerInt);
+      this.showPattern();
+    },
+
+    showPattern() {
+      let i = 0;
+      const spd = this.cfg.flashSpeed;
+
+      const tick = setInterval(() => {
+        this.activeIndex = this.pattern[i];
+
+        setTimeout(() => this.activeIndex = -1, spd * 0.5);
+
+        i++;
+
+        if (i >= this.pattern.length) {
+          clearInterval(tick);
+          setTimeout(() => {
+            this.waitingInput = true;
+            this.startTimer();
+          }, 500);
+        }
+      }, spd);
+    },
+
+    startTimer() {
+      clearInterval(this.timerInt);
+
+      this.timerInt = setInterval(() => {
+        if (!this.waitingInput) return;
+
+        this.timer--;
+
+        if (this.timer <= 0) {
+          this.endGame(false);
+        }
+      }, 1000);
+    },
+
+    clickCell(i) {
+      if (!this.waitingInput || this.locked) return;
+
+      const expected = this.pattern[this.user.length];
+
+      if (i !== expected) {
+        this.endGame(false);
+        return;
+      }
+
+      this.user.push(i);
+
+      if (this.user.length === this.pattern.length) {
+        this.lastCompletedLevel = this.level;
+        this.score += 100 + this.timer * 5 + this.level * 20;
+
+        this.waitingInput = false;
+        clearInterval(this.timerInt);
+
+        if (this.level >= LEVELS.length) {
+          this.endGame(true);
+        } else {
+          this.level++;
+          this.startLevel();
+        }
+      }
+    },
+
+    endGame(didWin) {
+      this.won = didWin;
+      this.screen = 'over';
+
+      clearInterval(this.timerInt);
+      this.saveScore();
+
+      this.$nextTick(renderLeaderboardFromServer);
+    },
+
+    goMenu() {
+      this.screen = 'intro';
+      this.$nextTick(renderLeaderboardFromServer);
+    },
+
+    // 🚀 SAFE SEND
+    saveScore() {
+      const payload = {
+        name: this.name || "Tommy",
+        score: this.score,
+        level: this.lastCompletedLevel,
+        time: this.timer
+      };
+
+      if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify({
+          type: "new_score",
+          payload: payload
+        }));
+      } else {
+        console.warn("⚠️ Socket not ready, retrying...");
+        setTimeout(() => this.saveScore(), 1000);
+      }
+    },
+
+    toggleAdmin() {
+      alert("Admin reset from backend only");
+    }
+  }
+});
+</script>
 </body>
 </html>
