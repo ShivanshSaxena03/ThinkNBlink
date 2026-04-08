@@ -1,262 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Think & Blink — Vice City</title>
-  <link href="https://fonts.googleapis.com/css2?family=Pricedown+Bl&family=Oswald:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-  <style>
-  :root{
-    --vc-bg:#0d0118;
-    --vc-surface:rgba(14,1,28,0.98);
-    --vc-hot:#ff2d78;
-    --vc-hot2:#ff5fa0;
-    --vc-cyan:#00e5ff;
-    --vc-cyan2:#80f0ff;
-    --vc-yellow:#ffe033;
-    --vc-purple:#c026d3;
-    --vc-purple2:#e040fb;
-    --vc-green:#39ff14;
-    --vc-red:#ff1a1a;
-    --vc-amber:#ffb800;
-    --text:#ffe8f5;
-    --text2:#c080a0;
-    --text3:#704060;
-    --mono:'Share Tech Mono',monospace;
-    --sans:'Oswald',sans-serif;
-    --title:'Pricedown Bl','Impact',sans-serif;
-  }
-  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-  body{
-    background:var(--vc-bg);font-family:var(--sans);
-    display:flex;justify-content:center;
-    min-height:100vh;color:var(--text);
-  }
-  body::before{
-    content:'';position:fixed;inset:0;
-    background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(255,45,120,0.03) 3px,rgba(255,45,120,0.03) 6px);
-    pointer-events:none;z-index:9999;
-  }
-  .card{
-    width:820px;max-width:100%;
-    padding:36px 40px 40px;
-    background:var(--vc-surface);
-    border:1px solid rgba(255,45,120,0.25);
-    border-top:4px solid var(--vc-hot);
-    min-height:100vh;position:relative;z-index:1;
-  }
-  /* corner chrome */
-  .card::before,.card::after{
-    content:'';position:absolute;
-    width:22px;height:22px;
-    border-color:var(--vc-cyan);border-style:solid;
-  }
-  .card::before{top:8px;left:8px;border-width:2px 0 0 2px}
-  .card::after{bottom:8px;right:8px;border-width:0 2px 2px 0}
+<meta charset="UTF-8">
+<title>Think And Blink (AI Tronics)</title>
+<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
 
-  /* ── HEADER ── */
-  .header{
-    display:flex;align-items:center;gap:18px;
-    margin-bottom:26px;padding-bottom:20px;
-    border-bottom:1px solid rgba(255,45,120,0.25);
-  }
-  .logo-wrap{
-    width:58px;height:58px;
-    background:rgba(255,45,120,0.08);
-    border:1px solid rgba(255,45,120,0.35);
-    display:flex;align-items:center;justify-content:center;
-    position:relative;flex-shrink:0;
-  }
-  .brand-name{
-    font-family:var(--title);font-size:34px;
-    color:var(--vc-hot2);letter-spacing:1.5px;line-height:1;
-    text-shadow:0 0 20px rgba(255,45,120,0.5),2px 2px 0 rgba(0,0,0,0.9);
-  }
-  .brand-sub{
-    font-family:var(--mono);font-size:11px;
-    color:var(--vc-cyan);letter-spacing:3px;margin-top:5px;
-    text-transform:uppercase;
-  }
-  .header-stars{display:flex;gap:4px;margin-left:auto}
-  .star{
-    width:18px;height:18px;
-    clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
-    background:rgba(255,45,120,0.18);
-  }
-  .star.lit{background:var(--vc-hot);filter:drop-shadow(0 0 5px rgba(255,45,120,0.7))}
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
 
-  /* ── BRIEFING ── */
-  .briefing{
-    background:rgba(255,45,120,0.06);
-    border:1px solid rgba(255,45,120,0.2);
-    border-left:4px solid var(--vc-hot);
-    padding:16px 18px;margin-bottom:18px;
-  }
-  .brief-title{
-    font-family:var(--mono);font-size:11px;letter-spacing:3px;
-    color:var(--vc-cyan);margin-bottom:10px;text-transform:uppercase;
-  }
-  .briefing p{
-    font-family:var(--mono);font-size:13px;
-    line-height:1.8;color:var(--text2);letter-spacing:.5px;
-  }
+body{
+  font-family:'Segoe UI',sans-serif;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  min-height:100vh;
+  padding:30px;
+  color:#e2e8f0;
+  overflow:auto;
 
-  /* ── WANTED ── */
-  .wanted-bar{
-    display:flex;justify-content:space-between;align-items:center;
-    background:rgba(255,45,120,0.05);
-    border:1px solid rgba(255,45,120,0.18);
-    padding:10px 16px;margin-bottom:16px;
-  }
-  .wanted-lbl{font-family:var(--mono);font-size:11px;color:var(--vc-hot2);letter-spacing:2px;text-transform:uppercase}
-  .wanted-stars{display:flex;gap:5px}
-  .w-star{
-    width:22px;height:22px;
-    clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
-    background:rgba(255,45,120,0.15);
-  }
-  .w-star.lit{background:var(--vc-hot);filter:drop-shadow(0 0 5px rgba(255,45,120,0.7))}
+  background: radial-gradient(circle at 20% 30%, #38bdf8, transparent 40%),
+              radial-gradient(circle at 80% 70%, #6366f1, transparent 40%),
+              #020617;
+}
 
-  /* ── FIELD ── */
-  .field{position:relative;margin-bottom:16px}
-  .field-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none}
-  input{
-    width:100%;padding:14px 14px 14px 44px;
-    border:1px solid rgba(255,45,120,0.3);border-left:4px solid var(--vc-hot);
-    background:rgba(255,45,120,0.05);color:var(--text);
-    font-family:var(--sans);font-size:16px;font-weight:400;letter-spacing:1px;
-    outline:none;transition:border-color .2s;border-radius:0;
-  }
-  input:focus{border-color:rgba(255,45,120,0.7)}
-  input::placeholder{color:var(--text3)}
+.game{
+  width:520px;
+  padding:30px;
+  border-radius:25px;
+  background:rgba(15,23,42,0.9);
+  backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,0.1);
+  box-shadow:0 0 40px rgba(56,189,248,0.2),
+             0 0 80px rgba(99,102,241,0.15);
+}
 
-  /* ── BUTTONS ── */
-  .btn{
-    display:inline-flex;align-items:center;gap:10px;
-    padding:14px 28px;
-    border:2px solid var(--vc-hot);
-    background:rgba(255,45,120,0.14);
-    color:var(--vc-hot2);
-    font-family:var(--title);font-size:18px;
-    font-weight:400;letter-spacing:2px;
-    cursor:pointer;transition:all .15s;
-    text-transform:uppercase;border-radius:0;
-  }
-  .btn:hover{background:rgba(255,45,120,0.28);transform:translateY(-1px)}
-  .btn:active{transform:translateY(0)}
-  .btn-ghost{
-    background:transparent;border:1px solid rgba(255,255,255,.15);
-    color:var(--text2);font-size:16px;
-  }
-  .btn-ghost:hover{border-color:rgba(0,229,255,0.4);background:rgba(0,229,255,0.07);color:var(--vc-cyan2)}
+h2{
+  text-align:center;
+  margin-bottom:20px;
+  font-size:26px;
+  background:linear-gradient(90deg,#22d3ee,#a78bfa,#f472b6);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
 
-  /* ── HUD ── */
-  .hud{
-    display:flex;justify-content:space-between;flex-wrap:wrap;
-    gap:12px;
-    padding:14px 20px;
-    background:rgba(0,0,0,.6);
-    border:1px solid rgba(255,45,120,0.2);
-    border-left:4px solid var(--vc-cyan);
-    margin-bottom:18px;position:relative;
-  }
-  .hud::after{
-    content:'VICE CITY';
-    position:absolute;right:14px;bottom:6px;
-    font-family:var(--title);font-size:9px;
-    color:rgba(255,45,120,0.12);letter-spacing:3px;
-  }
-  .hud-item{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:90px}
-  .hud-lbl{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text3)}
-  .hud-val{
-    font-family:var(--title);font-size:28px;
-    color:var(--vc-cyan2);line-height:1;letter-spacing:1px;
-  }
-  .hud-val.hot{color:var(--vc-hot2)}
-  .hud-val.go{color:var(--vc-green)}
-  .hud-val.warn{color:var(--vc-amber)}
-  .hud-val.danger{color:var(--vc-red);animation:blink .5s ease infinite alternate}
-  @keyframes blink{from{opacity:1}to{opacity:.25}}
-  .lives{display:flex;gap:5px;margin-top:2px}
-  .life-dot{
-    width:30px;height:10px;
-    background:var(--vc-hot);
-    border:1px solid rgba(255,45,120,0.4);
-  }
-  .life-dot.used{
-    background:rgba(255,26,26,0.3);
-    border-color:rgba(255,26,26,0.3);
-  }
+input{
+  width:100%;
+  padding:12px;
+  border-radius:25px;
+  border:1px solid rgba(255,255,255,0.2);
+  margin-top:10px;
+  background:rgba(255,255,255,0.08);
+  color:white;
+}
 
-  /* ── PROGRESS ── */
-  .prog-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-  .prog-phase{
-    font-family:var(--mono);font-size:13px;
-    letter-spacing:2px;font-weight:700;text-transform:uppercase;
-  }
-  .prog-phase.watch{color:var(--vc-cyan)}
-  .prog-phase.repeat{color:var(--vc-hot2)}
-  .prog-count{font-family:var(--mono);font-size:12px;color:var(--text3)}
-  .prog-bar{height:5px;background:rgba(255,255,255,.06);margin-bottom:16px}
-  .prog-fill{
-    height:100%;
-    background:linear-gradient(90deg,var(--vc-hot),var(--vc-cyan));
-    transition:width .25s ease;
-  }
+button{
+  margin-top:14px;
+  padding:12px 22px;
+  border-radius:30px;
+  border:none;
+  background:linear-gradient(90deg,#22d3ee,#6366f1,#a78bfa);
+  color:white;
+  cursor:pointer;
+  transition:0.25s;
+}
 
-  /* ── GRID ── */
-  .grid{display:grid;gap:10px;margin-bottom:8px}
-  .cell{
-    height:92px;
-    background:rgba(255,45,120,0.04);
-    border:1px solid rgba(255,45,120,0.16);
-    cursor:pointer;transition:all .12s;
-    position:relative;overflow:hidden;
-  }
-  .cell::before{
-    content:'';position:absolute;
-    top:0;left:0;right:0;height:1px;
-    background:rgba(0,229,255,0.08);
-  }
-  .cell::after{
-    content:'';position:absolute;
-    width:7px;height:7px;border-radius:50%;
-    background:rgba(255,45,120,0.18);
-    top:50%;left:50%;transform:translate(-50%,-50%);
-    transition:all .12s;
-  }
-  .cell:hover{
-    border-color:rgba(255,45,120,0.5);
-    background:rgba(255,45,120,0.09);
-  }
-  .cell:hover::after{background:rgba(255,45,120,0.6)}
-  .cell.active{
-    background:rgba(255,45,120,0.22);
-    border-color:rgba(255,95,160,0.9);
-    transform:scale(1.04);
-  }
-  .cell.active::after{background:var(--vc-hot2)}
-  .cell.correct{
-    background:rgba(0,229,255,0.14)!important;
-    border-color:rgba(0,229,255,0.65)!important;
-  }
-  .cell.correct::after{background:var(--vc-cyan)!important}
-  .cell.wrong{
-    background:rgba(255,26,26,0.2)!important;
-    border-color:rgba(255,26,26,0.8)!important;
-    animation:shake .28s ease;
-  }
-  .cell.mistake{
-    background:rgba(255,26,26,0.07)!important;
-    border-color:rgba(255,26,26,0.28)!important;
-  }
-  @keyframes shake{0%,100%{transform:translateX(0)}28%{transform:translateX(-6px)}72%{transform:translateX(6px)}}
+button:hover{
+  transform:scale(1.05);
+}
 
-  .divider{
-    height:1px;
-    background:linear-gradient(90deg,transparent,rgba(255,45,120,0.3),rgba(0,229,255,0.3),transparent);
-    margin:26px 0;
-  }
+.top-bar{
+  display:flex;
+  justify-content:space-between;
+  margin-top:10px;
+}
+
+.timer{
+  font-family:monospace;
+  color:#22c55e;
+}
+
+.grid{
+  display:grid;
+  gap:12px;
+  margin-top:30px;
+}
+
+.cell{
+  height:65px;
+  border-radius:14px;
+  background:rgba(255,255,255,0.08);
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.cell:hover{
+  transform:scale(1.1);
+}
+
+.active{ background:#38bdf8; }
+.correct{ background:#22c55e !important; }
+.wrong{ background:#ef4444 !important; }
+
+.leaderboard{
+  margin-top:20px;
+  padding:15px;
+  border-radius:12px;
+  background:rgba(0,0,0,0.3);
+
+  max-height:200px;
+  overflow-y:auto;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+.leaderboard::-webkit-scrollbar{
+  width:6px;
+}
+.leaderboard::-webkit-scrollbar-thumb{
+  background:#38bdf8;
+  border-radius:10px;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  text-align:center;
+}
+
+th{
+  color:#38bdf8;
+}
+
+td{
+  color:#e2e8f0;
+}
+
+th,td{
+  padding:8px;
+  font-size:13px;
+  border-bottom:1px solid rgba(255,255,255,0.2);
+}
 
   /* ── GAME OVER ── */
   .over-screen{text-align:center;padding:6px 0}
@@ -344,124 +229,62 @@
       </div>
     </div>
 
-    <!-- INTRO -->
-    <transition name="fade">
-    <div v-if="screen==='intro'" key="intro">
-      <div class="briefing">
-        <div class="brief-title">[ Mission Briefing ]</div>
-        <p>Tommy, listen up. Watch the grid light up in sequence,<br>then tap the tiles in the same order. Screw up twice — you're done.</p>
-      </div>
-      <div class="wanted-bar">
-        <span class="wanted-lbl">Wanted Level</span>
-        <div class="wanted-stars">
-          <div class="w-star" v-for="n in 6" :class="{lit:n<=Math.ceil((lastCompletedLevel||0)/2)}"></div>
-        </div>
-      </div>
-      <div class="field">
-        <svg class="field-icon" width="16" height="16" viewBox="0 0 14 14" fill="none">
-          <circle cx="7" cy="4.5" r="2.5" stroke="currentColor" stroke-width="1.3"/>
-          <path d="M1.5 12c0-3 2.5-4.5 5.5-4.5s5.5 1.5 5.5 4.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-        </svg>
-        <input v-model="name" placeholder="Your name, Tommy…" @keyup.enter="startGame"/>
-      </div>
-      <button class="btn" @click="startGame">
-        <svg width="12" height="12" viewBox="0 0 10 10" fill="none"><path d="M1 1.5L9 5L1 8.5V1.5Z" fill="currentColor"/></svg>
-        Start Mission
-      </button>
-      <div class="divider"></div>
-      <div class="lb-head">
-        <svg width="16" height="16" viewBox="0 0 14 14" fill="none">
-          <path d="M7 9V11.5M5 11.5H9M3.5 2H10.5V6A3.5 3.5 0 0 1 7 9 3.5 3.5 0 0 1 3.5 6V2Z" stroke="#ff2d78" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <span class="lb-title">Most Wanted</span>
-      </div>
-      <div id="lb-intro"></div>
-    </div>
-    </transition>
+</div>
 
-    <!-- GAME -->
-    <transition name="fade">
-    <div v-if="screen==='game'" key="game">
-      <div class="hud">
-        <div class="hud-item">
-          <span class="hud-lbl">Mission</span>
-          <span class="hud-val hot">{{ level }}</span>
-        </div>
-        <div class="hud-item">
-          <span class="hud-lbl">Cash</span>
-          <span class="hud-val">${{ score }}</span>
-        </div>
-        <div class="hud-item">
-          <span class="hud-lbl">Turf</span>
-          <span class="hud-val hot">{{ gridSize }}x{{ gridSize }}</span>
-        </div>
-        <div class="hud-item">
-          <span class="hud-lbl">Clock</span>
-          <span class="hud-val" :class="timerClass">{{ timer }}s</span>
-        </div>
-        <div class="hud-item">
-          <span class="hud-lbl">Lives</span>
-          <div class="lives">
-            <div class="life-dot" :class="{used:mistakes>=1}"></div>
-            <div class="life-dot" :class="{used:mistakes>=2}"></div>
-          </div>
-        </div>
-      </div>
-      <div class="prog-row">
-        <span class="prog-phase" :class="waitingInput?'repeat':'watch'">
-          {{ waitingInput ? '[ Your Move ]' : '[ Watch It ]' }}
-        </span>
-        <span class="prog-count" v-if="waitingInput">{{ user.length }} / {{ pattern.length }}</span>
-      </div>
-      <div class="prog-bar">
-        <div class="prog-fill" :style="{width:progressPct+'%'}"></div>
-      </div>
-      <div class="grid" :style="gridStyle">
-        <div v-for="(c,i) in grid" :key="i" class="cell" :class="cellClass(i)" @click="clickCell(i)"></div>
-      </div>
-    </div>
-    </transition>
+<script>
+new Vue({
+  el:"#app",
+  data:{
+    name:"",
+    level:1,
+    score:0,
+    timer:0,
+    timerInt:null,
+    grid:[],
+    pattern:[],
+    user:[],
+    activeIndex:-1,
+    clickedIndex:-1,
+    clickState:"",
+    gameStarted:false,
+    gameOver:false,
+    waitingInput:false
+  },
 
-    <!-- GAME OVER -->
-    <transition name="fade">
-    <div v-if="screen==='over'" key="over" class="over-screen">
-      <svg v-if="won" class="over-icon" width="72" height="72" viewBox="0 0 60 60" fill="none">
-        <polygon points="30,4 36,19 53,19 40,29 45,46 30,36 15,46 20,29 7,19 24,19" fill="rgba(0,229,255,0.1)" stroke="#00e5ff" stroke-width="1.4"/>
-        <path d="M18 30L26 38L42 22" stroke="#00e5ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <svg v-else class="over-icon" width="72" height="72" viewBox="0 0 60 60" fill="none">
-        <polygon points="30,4 36,19 53,19 40,29 45,46 30,36 15,46 20,29 7,19 24,19" fill="rgba(255,45,120,0.1)" stroke="#ff2d78" stroke-width="1.4"/>
-        <path d="M20 20L40 40M40 20L20 40" stroke="#ff2d78" stroke-width="2.5" stroke-linecap="round"/>
-      </svg>
-      <div class="over-title" :class="won?'win':'lose'">{{ won ? 'Mission Passed!' : 'Busted!' }}</div>
-      <div class="over-msg">{{ won ? 'Vice City belongs to you, Tommy.' : 'You got played, '+(name||'Tommy')+'. Hit the streets again.' }}</div>
-      <div class="score-big">${{ score }}</div>
-      <div class="score-lbl">Cash Earned</div>
-      <div class="btn-row">
-        <button class="btn" @click="startGame">
-          <svg width="12" height="12" viewBox="0 0 10 10" fill="none"><path d="M1 1.5L9 5L1 8.5V1.5Z" fill="currentColor"/></svg>
-          Retry Mission
-        </button>
-        <button class="btn btn-ghost" @click="goMenu">
-          <svg width="13" height="13" viewBox="0 0 12 12" fill="none">
-            <path d="M1.5 6a4.5 4.5 0 1 0 .85-2.65M1.5 3.5V6H4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          Menu
-        </button>
-      </div>
-      <div class="divider"></div>
-      <div class="lb-head">
-        <svg width="16" height="16" viewBox="0 0 14 14" fill="none">
-          <path d="M7 9V11.5M5 11.5H9M3.5 2H10.5V6A3.5 3.5 0 0 1 7 9 3.5 3.5 0 0 1 3.5 6V2Z" stroke="#ff2d78" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <span class="lb-title">Most Wanted</span>
-      </div>
-      <div id="lb-over"></div>
-    </div>
-    </transition>
+  computed:{
+    gridStyle(){
+      let size=this.level+2;
+      return {gridTemplateColumns:`repeat(${size},1fr)`};
+    }
+  },
 
-    <button class="admin-btn" @click="toggleAdmin"></button>
-  </div>
+  mounted(){
+    this.$nextTick(() => {
+      this.renderLeaderboard();
+    });
+  },
+
+  methods:{
+    generateGrid(){
+      let size=this.level+2;
+      this.grid=Array(size*size).fill(0);
+    },
+
+    generatePattern(){
+      let len=this.level*3+2;
+      this.pattern=[];
+      for(let i=0;i<len;i++){
+        this.pattern.push(Math.floor(Math.random()*this.grid.length));
+      }
+    },
+
+    startGame(){
+      this.level=1;
+      this.score=0;
+      this.gameStarted=true;
+      this.gameOver=false;
+      this.startLevel();
+    },
 
   <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
   <script>
