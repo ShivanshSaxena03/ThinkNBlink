@@ -12,7 +12,29 @@ app.add_middleware(
 )
 clients = []
 leaderboard = []
+@app.post("/clear")
+async def clear_leaderboard():
+    global leaderboard, clients
 
+    leaderboard = []
+
+    disconnected = []
+
+    for client in clients:
+        try:
+            await client.send_json({
+                "type": "leaderboard",
+                "data": leaderboard
+            })
+        except:
+            disconnected.append(client)
+
+    # ✅ remove dead clients
+    for d in disconnected:
+        if d in clients:
+            clients.remove(d)
+
+    return {"message": "Leaderboard cleared"}
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     print("🔥 WebSocket request received")
@@ -40,6 +62,7 @@ async def websocket_endpoint(websocket: WebSocket):
 
                 # ✅ SAFE BROADCAST
                 disconnected = []
+
                 for client in clients:
                     try:
                         await client.send_json({
@@ -49,16 +72,12 @@ async def websocket_endpoint(websocket: WebSocket):
                     except:
                         disconnected.append(client)
 
-                # remove dead clients
                 for d in disconnected:
-                    clients.remove(d)
+                    if d in clients:
+                        clients.remove(d)
 
     except WebSocketDisconnect:
         if websocket in clients:
             clients.remove(websocket)
         print("❌ Disconnected")
-@app.post("/clear")
-async def clear_leaderboard():
-    global leaderboard
-    leaderboard = []
-    return {"message": "Leaderboard cleared"}
+
