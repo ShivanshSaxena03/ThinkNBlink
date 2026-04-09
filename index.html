@@ -487,16 +487,8 @@
 
   <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
 <script>
-  if (msg.type === "leaderboard") {
-  window.globalLeaderboard = msg.data || [];
-  renderLeaderboardFromServer();
-}
-toggleAdmin() {
-  fetch("/clear", { method: "POST" })
-    .then(() => {
-      setTimeout(() => location.reload(), 500); // 🔥 force refresh
-    });
-}
+  
+
 // 🔥 AUTO RECONNECTING WEBSOCKET
 let socket;
 
@@ -514,9 +506,9 @@ function connectWebSocket() {
     const msg = JSON.parse(event.data);
 
     if (msg.type === "leaderboard") {
-      window.globalLeaderboard = msg.data;
+      window.globalLeaderboard = msg.data || [];
       renderLeaderboardFromServer();
-    }
+}
   };
 
   socket.onerror = (err) => {
@@ -675,7 +667,19 @@ new Vue({
       clearInterval(this.timerInt);
       this.showPattern();
     },
+    toggleAdmin() {
+      fetch("/clear", { method: "POST" })
+        .then(res => res.json())
+        .then(data => {
+          console.log("✅ Cleared:", data);
 
+          // optional refresh
+          setTimeout(() => location.reload(), 500);
+        })
+        .catch(err => {
+          console.error("❌ Clear failed", err);
+        });
+    },
     showPattern() {
       let i = 0;
       const spd = this.cfg.flashSpeed;
