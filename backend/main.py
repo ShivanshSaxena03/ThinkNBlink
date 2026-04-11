@@ -1,5 +1,8 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
+import io
+import csv
 app = FastAPI()
 
 
@@ -12,6 +15,7 @@ app.add_middleware(
 )
 clients = []
 leaderboard = []
+
 @app.post("/clear")
 async def clear_leaderboard():
     global leaderboard, clients
